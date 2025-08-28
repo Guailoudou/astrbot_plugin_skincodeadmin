@@ -14,7 +14,7 @@ class skinCodeAdmin(Star):
         self.groupdata_file = r"skinCode_group.json"
         self.userdata = {}
         self.groupdata = {}
-        #asyncio.run(self.init())
+        asyncio.run(self.init())
 
         logger.info("skincodeadmin插件初始化完成")
     async def initialize(self):
