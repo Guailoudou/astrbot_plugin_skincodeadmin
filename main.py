@@ -14,16 +14,17 @@ class skinCodeAdmin(Star):
         self.groupdata_file = r"skinCode_group.json"
         self.userdata = {}
         self.groupdata = {}
+        self.init()
         
         logger.info("skincodeadmin插件初始化完成")
     async def initialize(self):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
-    @filter.permission_type(filter.PermissionType.ADMIN)
-    @filter.command("code_init")
-    async def init(self, event: AstrMessageEvent):
-        await self.get_userdata_file()
-        await self.get_groupdata_file()
-        event.stop_event()
+    # @filter.permission_type(filter.PermissionType.ADMIN)
+    # @filter.command("code_init")
+    def init(self):
+        self.get_userdata_file()
+        self.get_groupdata_file()
+    
 
     # 注册指令的装饰器。指令名为 helloworld。注册成功后，发送 `/helloworld` 就会触发这个指令，并回复 `你好, {user_name}!`
     @filter.permission_type(filter.PermissionType.ADMIN)
@@ -323,7 +324,7 @@ class skinCodeAdmin(Star):
         group_id = request_data.get("group_id", "")
         
         logger.info(f"收到加群请求: 用户ID={user_id}, 群ID={group_id}, 验证信息={comment}")
-        if group_id not in self.group["user"]:
+        if group_id not in self.groupdata["user"]:
             logger.info(f"群{group_id}未在配置文件中")
             return
         if user_id not in self.userdata:
