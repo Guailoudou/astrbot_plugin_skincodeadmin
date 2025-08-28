@@ -132,7 +132,7 @@ class skinCodeAdmin(Star):
     async def cmd_query(self, event: AstrMessageEvent,qq:str):
         """查询用户信息"""
         msg = f"{qq}的相关用户信息:"
-        if(self.userdata.keys().get(qq,None)):
+        if(qq not in self.userdata.keys()):
             yield event.plain_result(msg+"无信息")
             return
         msg = await self.query(event,qq)
