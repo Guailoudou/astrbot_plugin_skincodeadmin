@@ -310,7 +310,7 @@ class skinCodeAdmin(Star):
             return
         
         # 确保message_obj有session_id属性
-        self.set_session_id(event)
+        # self.set_session_id(event)
         
         # 处理加群请求
         if raw_message.get("request_type") == "group" and raw_message.get("sub_type") == "add":
@@ -343,7 +343,7 @@ class skinCodeAdmin(Star):
         """同意或拒绝请求"""
         try:
             # 确保message_obj有session_id属性
-            self.set_session_id(event)
+            # self.set_session_id(event)
             
             # 检查是否为aiocqhttp平台
             if event.get_platform_name() == "aiocqhttp":
