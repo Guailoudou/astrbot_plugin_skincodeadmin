@@ -10,8 +10,8 @@ class skinCodeAdmin(Star):
     def __init__(self, context: Context,config: AstrBotConfig):
         super().__init__(context)
         self.config = config
-        self.userdata_file = r".\data\plugins\astrbot_plugin_skincodeadmin\user.json"
-        self.groupdata_file = r".\data\plugins\astrbot_plugin_skincodeadmin\group.json"
+        self.userdata_file = r"skinCode_user.json"
+        self.groupdata_file = r"skinCode_group.json"
         self.userdata = {}
         self.groupdata = {}
         
