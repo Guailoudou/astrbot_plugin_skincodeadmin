@@ -4,9 +4,9 @@ from astrbot.api import logger,AstrBotConfig
 import astrbot.api.message_components as Comp
 import os,aiohttp,json
 
-PLUGIN_DIR = os.path.join('data', 'plugins', 'astrbot_plugin_skincodeadmin')
-USER_DIR = os.path.join(PLUGIN_DIR, 'user.json') # model in example_data/user.json
-GROUP_DIR = os.path.join(PLUGIN_DIR, 'group.json')
+SKINCODE_PLUGIN_DIR = os.path.join('data', 'plugins', 'astrbot_plugin_skincodeadmin')
+SKINCODE_USER_DIR = os.path.join(SKINCODE_PLUGIN_DIR, 'user.json') # model in example_data/user.json
+SKINCODE_GROUP_DIR = os.path.join(SKINCODE_PLUGIN_DIR, 'group.json')
 
 @register("skinCodeAdmin", "Guailoudou", "一个简单的 Hello World 插件", "1.0.0")
 class skinCodeAdmin(Star):
@@ -30,7 +30,7 @@ class skinCodeAdmin(Star):
         # message_str = event.message_str # 用户发的纯文本消息字符串
         # message_chain = event.get_messages() # 用户所发的消息的消息链 # from astrbot.api.message_components import *
         # logger.info(message_chain)
-        free,used = await self.getcodes()
+        free,used = await self.getallcodes()
         yield event.plain_result(f"剩余{len(free)} \n\n 已使用{len(used)}")
         # yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!") # 发送一条纯文本消息
     @filter.event_message_type(filter.EventMessageType.PRIVATE_MESSAGE) # 私聊
@@ -241,16 +241,16 @@ class skinCodeAdmin(Star):
     
     async def save_userdata(self):
         """保存用户数据到文件"""
-        with open(USER_DIR, "w", encoding="utf-8") as f:
+        with open(SKINCODE_USER_DIR, "w", encoding="utf-8") as f:
             json.dump(self.userdata, f)
     async def save_groupdata(self):
         """保存群数据到文件"""
-        with open(GROUP_DIR, "w", encoding="utf-8") as f:
+        with open(SKINCODE_GROUP_DIR, "w", encoding="utf-8") as f:
             json.dump(self.groupdata, f)
     async def get_userdata_file(self):
         """读取文件获取用户数据"""
         logger.info("正在读取用户数据文件")
-        self.userdata = await self.get_file(USER_DIR)
+        self.userdata = await self.get_file(SKINCODE_USER_DIR)
         logger.info(f"用户数据文件读取完毕")
         
     async def get_userdata(self, qq: str):
@@ -263,7 +263,7 @@ class skinCodeAdmin(Star):
     async def get_groupdata_file(self):
         """获取群数据文件"""
         logger.info(f"正在读取群数据文件")
-        self.groupdata = self.get_file(GROUP_DIR)
+        self.groupdata = self.get_file(SKINCODE_GROUP_DIR)
         logger.info(f"群数据文件读取完毕")
     async def get_file(self, dir):
         """获取文件"""
