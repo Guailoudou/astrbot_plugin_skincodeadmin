@@ -5,7 +5,6 @@ import astrbot.api.message_components as Comp
 import os,aiohttp,json
 
 PLUGIN_DIR = os.path.join('data', 'plugins', 'astrbot_plugin_skincodeadmin')
-PLUGIN_DIR.mkdir(parents=True, exist_ok=True)
 USER_DIR = os.path.join(PLUGIN_DIR, 'user.json') # model in example_data/user.json
 GROUP_DIR = os.path.join(PLUGIN_DIR, 'group.json')
 
