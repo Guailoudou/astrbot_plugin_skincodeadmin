@@ -21,11 +21,10 @@ class skinCodeAdmin(Star):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("code_init")
-    async def init(self, event: AstrMessageEvent = None):
+    async def init(self, event: AstrMessageEvent):
         await self.get_userdata_file()
         await self.get_groupdata_file()
-        if event:
-            event.stop_event()
+        event.stop_event()
 
     # 注册指令的装饰器。指令名为 helloworld。注册成功后，发送 `/helloworld` 就会触发这个指令，并回复 `你好, {user_name}!`
     @filter.permission_type(filter.PermissionType.ADMIN)
