@@ -14,9 +14,12 @@ class skinCodeAdmin(Star):
         self.groupdata_file = r"skinCode_group.json"
         self.userdata = {}
         self.groupdata = {}
-        logger.info("skincodeadmin插件初始化完成")
+        
     async def initialize(self):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
+        await self.get_userdata_file()
+        await self.get_groupdata_file()
+        logger.info("skincodeadmin插件初始化完成")
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("code_init")
     async def init(self, event: AstrMessageEvent):
