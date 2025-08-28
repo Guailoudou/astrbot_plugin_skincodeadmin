@@ -267,7 +267,7 @@ class skinCodeAdmin(Star):
     async def get_groupdata_file(self):
         """获取群数据文件"""
         logger.info(f"正在读取群数据文件")
-        self.groupdata = self.get_file(self.groupdata_file)
+        self.groupdata = await self.get_file(self.groupdata_file)
         logger.info(f"群数据文件读取完毕")
     async def get_file(self, dir):
         """获取文件"""
