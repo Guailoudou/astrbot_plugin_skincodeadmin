@@ -79,8 +79,8 @@ class skinCodeAdmin(Star):
             from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
             assert isinstance(event, AiocqhttpMessageEvent)
             payloads = {
-                    "group_id": gid,
-                    "user_id": qq,
+                    "group_id": int(gid),
+                    "user_id": int(qq),
                     "reject_add_request": False
                 }  
             await event.bot.call_action("set_group_kick", **payloads)
