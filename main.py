@@ -4,9 +4,10 @@ from astrbot.api import logger,AstrBotConfig
 import astrbot.api.message_components as Comp
 import os,aiohttp,json
 
-PLUGIND_DIR = os.path.join('data', 'plugins', 'astrbot_plugin_skincodeadmin')
-USER_DIR = os.path.join(PLUGIND_DIR, 'user.json') # model in example_data/user.json
-GROUP_DIR = os.path.join(PLUGIND_DIR, 'group.json')
+PLUGIN_DIR = os.path.join('data', 'plugins', 'astrbot_plugin_skincodeadmin')
+PLUGIN_DIR.mkdir(parents=True, exist_ok=True)
+USER_DIR = os.path.join(PLUGIN_DIR, 'user.json') # model in example_data/user.json
+GROUP_DIR = os.path.join(PLUGIN_DIR, 'group.json')
 
 @register("skinCodeAdmin", "Guailoudou", "一个简单的 Hello World 插件", "1.0.0")
 class skinCodeAdmin(Star):
