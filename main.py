@@ -96,7 +96,6 @@ class skinCodeAdmin(Star):
         await self.setban(qq,False)
         yield event.plain_result(f"已解封用户{qq}")
 
-    @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("invite")
     async def cmd_invite(self, event: AstrMessageEvent, qq: str):
         """邀请用户"""
