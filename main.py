@@ -4,17 +4,14 @@ from astrbot.api import logger,AstrBotConfig
 import astrbot.api.message_components as Comp
 import os,aiohttp,json
 
-SKINCODE_PLUGIN_DIR = os.path.join('data', 'plugins', 'astrbot_plugin_skincodeadmin')
-# SKINCODE_USER_DIR = os.path.join(SKINCODE_PLUGIN_DIR, 'user.json') # model in example_data/user.json
-# SKINCODE_GROUP_DIR = os.path.join(SKINCODE_PLUGIN_DIR, 'group.json')
 
 @register("skinCodeAdmin", "Guailoudou", "一个简单的 Hello World 插件", "1.0.0")
 class skinCodeAdmin(Star):
     def __init__(self, context: Context,config: AstrBotConfig):
         super().__init__(context)
         self.config = config
-        self.userdata_file = os.path.join(SKINCODE_PLUGIN_DIR, 'user.json')
-        self.groupdata_file = os.path.join(SKINCODE_PLUGIN_DIR, 'group.json')
+        self.userdata_file = os.path.join('data', 'plugins', 'astrbot_plugin_skincodeadmin', 'user.json')
+        self.groupdata_file = os.path.join('data', 'plugins', 'astrbot_plugin_skincodeadmin', 'group.json')
         self.userdata = {}
         self.groupdata = {}
         self.get_userdata_file()
