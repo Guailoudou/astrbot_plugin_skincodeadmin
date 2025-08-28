@@ -222,11 +222,11 @@ class skinCodeAdmin(Star):
         for code in free:
             isfree = True
             for data in self.userdata.values():
-                if data["code"] == code:
+                if data["code"] == code["code"]:
                     isfree = False
                     break
             if isfree:
-                return code
+                return code["code"]
 
     async def new_user(self, qq: str ):
         """创建新的用户信息"""
