@@ -128,7 +128,7 @@ class skinCodeAdmin(Star):
         if(self.userdata.get(qq,None)):
             yield event.plain_result(msg+"无信息")
             return
-        msg = await self.query(qq)
+        msg = await self.query(event,qq)
         yield event.plain_result(msg)
         associated = await self.get_associated(qq)
         yield event.plain_result(f"所有相关联的QQ:{associated}")
@@ -158,7 +158,7 @@ class skinCodeAdmin(Star):
             await self.cmd_ban(event, qq)
         event.stop_event()
      
-    async def query(self, qq: str):
+    async def query(self, event: AstrMessageEvent,qq: str):
         """查询用户信息"""
         msg = f"{qq}的相关用户信息:"
         if(self.userdata.get(qq,None)):
