@@ -37,6 +37,7 @@ class skinCodeAdmin(Star):
         free,used = await self.getallcodes()
         yield event.plain_result(f"剩余{len(free)} \n\n 已使用{len(used)}")
         # yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!") # 发送一条纯文本消息
+
     @filter.event_message_type(filter.EventMessageType.PRIVATE_MESSAGE) # 私聊
     @filter.command("getmecode", alias={'获取邀请码'})
     async def cmd_getnewcode(self, event: AstrMessageEvent):
@@ -131,7 +132,7 @@ class skinCodeAdmin(Star):
     async def cmd_query(self, event: AstrMessageEvent,qq:str):
         """查询用户信息"""
         msg = f"{qq}的相关用户信息:"
-        if(self.userdata.get(qq,None)):
+        if(self.userdata.keys().get(qq,None)):
             yield event.plain_result(msg+"无信息")
             return
         msg = await self.query(event,qq)
@@ -167,8 +168,6 @@ class skinCodeAdmin(Star):
     async def query(self, event: AstrMessageEvent,qq: str):
         """查询用户信息"""
         msg = f"{qq}的相关用户信息:"
-        if(self.userdata.get(qq,None)):
-            return msg+"无信息"
         userdata = self.userdata[qq]
         msg += f"\n用户id:{userdata['id']}"
         msg += f"\n皮肤站邀请码:{userdata['code']}"
@@ -250,6 +249,7 @@ class skinCodeAdmin(Star):
         """保存用户数据到文件"""
         with open(self.userdata_file, "w", encoding="utf-8") as f:
             json.dump(self.userdata, f)
+            logger.info(f"保存用户数据到 {self.userdata_file}:{self.userdata}")
     async def save_groupdata(self):
         """保存群数据到文件"""
         with open(self.groupdata_file, "w", encoding="utf-8") as f:
@@ -356,7 +356,6 @@ class skinCodeAdmin(Star):
                 client = event.bot  
                 payloads = {
                     "flag": flag,
-                    "sub_type": "add",
                     "approve": approve,
                     "reason": reason if reason else ""
                 }         
