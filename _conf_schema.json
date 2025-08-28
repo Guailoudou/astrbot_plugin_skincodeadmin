@@ -3,6 +3,7 @@
     "description": "获取邀请码的api地址",
     "type": "string",
     "hint": "",
-    "obvious_hint": true
+    "obvious_hint": true,
+    "default": ""
   }
 }
