@@ -336,10 +336,10 @@ class skinCodeAdmin(Star):
             logger.info(f"用户{user_id}已封禁，拒绝加入")
         if(self.userdata[user_id]["is_pass"] == True):
             await self.approve_request(event,flag,True)
-            logger.info(f"已通过加群请求: 用户ID={user_id}, 群ID={group_id}, 验证信息={comment}")
+            logger.info(f"已通过加群请求: 用户ID={user_id}, 群ID={group_id}, 验证信息={comment} {self.userdata[user_id]['is_pass']}")
         else:
             await self.approve_request(event,flag,False,"你未拥有该群白名单")
-            logger.info(f"已拒绝加群请求: 用户ID={user_id}, 群ID={group_id}, 验证信息={comment}")
+            logger.info(f"已拒绝加群请求: 用户ID={user_id}, 群ID={group_id}, 验证信息={comment} {self.userdata[user_id]['is_pass']}")
 
 
     async def approve_request(self, event: AstrMessageEvent, flag, approve=True, reason=""):
