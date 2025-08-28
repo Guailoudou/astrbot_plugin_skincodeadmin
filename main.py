@@ -75,7 +75,7 @@ class skinCodeAdmin(Star):
             await self.new_user(qq)
         await self.setpass(qq,False)
         await self.setban(qq,True)
-        for gid in self.groupdata:
+        for gid in self.groupdata["user"]:
             from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
             assert isinstance(event, AiocqhttpMessageEvent)
             payloads = {
