@@ -8,7 +8,7 @@ PLUGIN_DIR = os.path.join('data', 'plugins', 'astrbot_plugin_skincodeadmin')
 USER_DIR = os.path.join(PLUGIN_DIR, 'user.json') # model in example_data/user.json
 GROUP_DIR = os.path.join(PLUGIN_DIR, 'group.json')
 
-@register("skincodeadmin", "Guailoudou", "一个简单的 Hello World 插件", "1.0.0")
+@register("skinCodeAdmin", "Guailoudou", "一个简单的 Hello World 插件", "1.0.0")
 class skinCodeAdmin(Star):
     def __init__(self, context: Context,config: AstrBotConfig):
         super().__init__(context)
