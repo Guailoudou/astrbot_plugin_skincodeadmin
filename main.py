@@ -2,7 +2,7 @@ from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
 from astrbot.api.star import Context, Star, register
 from astrbot.api import logger,AstrBotConfig
 import astrbot.api.message_components as Comp
-import os,aiohttp,json
+import os,aiohttp,json,asyncio
 
 
 @register("skinCodeAdmin", "Guailoudou", "一个简单的 Hello World 插件", "1.0.0")
@@ -14,6 +14,8 @@ class skinCodeAdmin(Star):
         self.groupdata_file = r"skinCode_group.json"
         self.userdata = {}
         self.groupdata = {}
+        asyncio.run(self.init())
+        
         
         logger.info("skincodeadmin插件初始化完成")
     async def initialize(self):
@@ -265,23 +267,17 @@ class skinCodeAdmin(Star):
         self.userdata = await self.get_file(self.userdata_file)
         logger.info(f"用户数据文件读取完毕")
         
-    # async def get_userdata(self, qq: str):
-    #     """获取指定用户数据"""
-    #     for userdata in self.userdata:
-    #         if userdata["id"] == qq:
-    #             return userdata
-    #     return None
 
     async def get_groupdata_file(self):
         """获取群数据文件"""
         logger.info(f"正在读取群数据文件")
-        self.groupdata = await self.get_file(self.groupdata_file)
+        self.groupdata = await self.get_file(self.groupdata_file,{"user":[],"admin":[],"temp":[]})
         logger.info(f"群数据文件读取完毕")
-    async def get_file(self, dir):
+    async def get_file(self, dir ,init={}):
         """获取文件"""
         if not os.path.exists(dir):
             with open(dir, "w", encoding="utf-8") as f:
-                json.dump({}, f)
+                json.dump(init, f)
         with open(dir, "r", encoding="utf-8") as f:
             data = json.load(f)
         return data
@@ -340,7 +336,8 @@ class skinCodeAdmin(Star):
         if self.userdata[user_id]["is_banned"]:
             await self.approve_request(event,flag,False,"你已被封禁，拒绝加入")
             logger.info(f"用户{user_id}已封禁，拒绝加入")
-        if(self.userdata[user_id]["is_pass"] == True):
+            return
+        if(self.userdata[user_id]["is_pass"]):
             await self.approve_request(event,flag,True)
             logger.info(f"已通过加群请求: 用户ID={user_id}, 群ID={group_id}, 验证信息={comment} {self.userdata[user_id]['is_pass']}")
         else:
