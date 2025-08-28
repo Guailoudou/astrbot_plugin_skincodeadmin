@@ -75,6 +75,9 @@ class skinCodeAdmin(Star):
         await self.setpass(qq,False)
         await self.setban(qq,True)
         for gid in self.groupdata:
+            from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
+            assert isinstance(event, AiocqhttpMessageEvent)
+
             await event.bot.call_action("set_group_kick", group_id=gid, user_id=int(qq), reject_add_request=False)
         yield event.plain_result(f"已封禁用户{qq}，并踢出相关群,他的皮肤站uid为{self.userdata[qq]['skin_uid']}")
 
@@ -348,22 +351,19 @@ class skinCodeAdmin(Star):
             # 检查是否为aiocqhttp平台
             if event.get_platform_name() == "aiocqhttp":
                 # 使用NapCat API格式
-                # from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
-                # assert isinstance(event, AiocqhttpMessageEvent)
-                client = event.bot           
-                await client.call_action('set_group_add_request', flag,approve,reason)
+                from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
+                assert isinstance(event, AiocqhttpMessageEvent)
+                client = event.bot  
+                payloads = {
+                    "flag": flag,
+                    "sub_type": "add",
+                    "approve": approve,
+                    "reason": reason if reason else ""
+                }         
+                await client.call_action('set_group_add_request', **payloads)
                 logger.info(f'已处理加群请求: {flag} {approve} {reason}')
                 return True
-            # 兼容其他平台的处理方式
-            elif event.bot and hasattr(event.bot, "call_action"):
-                await event.bot.call_action(
-                    "set_group_add_request",
-                    flag=flag,
-                    sub_type="add",
-                    approve=approve,
-                    reason=reason
-                )
-                return True
+           
             return False
         except Exception as e:
             logger.error(f"处理群聊申请失败: {e}")
