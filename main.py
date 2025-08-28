@@ -142,7 +142,7 @@ class skinCodeAdmin(Star):
         """同步皮肤站用户信息"""
         _,used = await self.getcodes()
         
-        for userdata in self.userdata:
+        for userdata in self.userdata.values():
             if userdata["code"]!="" and userdata["skin_uid"] == "":
                 for codeused in reversed(used):
                     if codeused["code"]==userdata["code"]:
@@ -221,7 +221,7 @@ class skinCodeAdmin(Star):
         free,_ = await self.getallcodes()
         for code in free:
             isfree = True
-            for data in self.userdata:
+            for data in self.userdata.values():
                 if data["code"] == code:
                     isfree = False
                     break
@@ -257,12 +257,12 @@ class skinCodeAdmin(Star):
         self.userdata = await self.get_file(self.userdata_file)
         logger.info(f"用户数据文件读取完毕")
         
-    async def get_userdata(self, qq: str):
-        """获取指定用户数据"""
-        for userdata in self.userdata:
-            if userdata["id"] == qq:
-                return userdata
-        return None
+    # async def get_userdata(self, qq: str):
+    #     """获取指定用户数据"""
+    #     for userdata in self.userdata:
+    #         if userdata["id"] == qq:
+    #             return userdata
+    #     return None
 
     async def get_groupdata_file(self):
         """获取群数据文件"""
