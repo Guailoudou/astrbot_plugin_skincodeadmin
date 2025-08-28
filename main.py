@@ -324,6 +324,7 @@ class skinCodeAdmin(Star):
         """处理加群请求"""
         flag = request_data.get("flag", "")
         user_id = request_data.get("user_id", "")
+        user_id = str(user_id)
         comment = request_data.get("comment", "")
         group_id = request_data.get("group_id", "")
         
