@@ -79,11 +79,12 @@ class skinCodeAdmin(Star):
             from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
             assert isinstance(event, AiocqhttpMessageEvent)
             payloads = {
-                    "group_id": int(gid),
-                    "user_id": int(qq),
+                    "group_id": gid,
+                    "user_id": qq,
                     "reject_add_request": False
                 }  
             await event.bot.call_action("set_group_kick", **payloads)
+            logger.info(f"提出用户{qq}成功在{gid}群中")
         yield event.plain_result(f"已封禁用户{qq}，并踢出相关群,他的皮肤站uid为{self.userdata[qq]['skin_uid']}")
 
     @filter.permission_type(filter.PermissionType.ADMIN)
