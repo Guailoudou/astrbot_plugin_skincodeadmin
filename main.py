@@ -162,7 +162,7 @@ class skinCodeAdmin(Star):
         """查询用户信息"""
         msg = f"{qq}的相关用户信息:"
         if(self.userdata.get(qq,None)):
-            yield event.plain_result(msg+"无信息")
+            return msg+"无信息"
         userdata = self.userdata[qq]
         msg += f"\n用户id:{userdata['id']}"
         msg += f"\n皮肤站邀请码:{userdata['code']}"
