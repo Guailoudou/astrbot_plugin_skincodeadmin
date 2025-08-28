@@ -45,7 +45,7 @@ class skinCodeAdmin(Star):
         message_obj = event.message_obj
         qq = message_obj.sender.user_id
         
-        if(qq not in self.userdata):
+        if(qq not in self.userdata.keys()):
             yield event.plain_result(f"获取中，请稍后...")
             await self.new_user(qq)
         else:
@@ -62,7 +62,7 @@ class skinCodeAdmin(Star):
     @filter.command("pass")
     async def cmd_pass(self, event: AstrMessageEvent, qq: str):
         """通过用户白名单"""
-        if qq not in self.userdata:
+        if qq not in self.userdata.keys():
             await self.new_user(qq)
         await self.setpass(qq,True)
         yield event.plain_result(f"已通过用户{qq}白名单")
@@ -70,7 +70,7 @@ class skinCodeAdmin(Star):
     @filter.command("ban")
     async def cmd_ban(self, event: AstrMessageEvent, qq: str):
         """封禁用户"""
-        if qq not in self.userdata:
+        if qq not in self.userdata.keys():
             await self.new_user(qq)
         await self.setpass(qq,False)
         await self.setban(qq,True)
@@ -85,7 +85,7 @@ class skinCodeAdmin(Star):
     @filter.command("unban")
     async def cmd_unban(self, event: AstrMessageEvent, qq: str):
         """解封用户"""
-        if qq not in self.userdata:
+        if qq not in self.userdata.keys():
             await self.new_user(qq)
         await self.setban(qq,False)
         yield event.plain_result(f"已解封用户{qq}")
@@ -96,12 +96,12 @@ class skinCodeAdmin(Star):
         """邀请用户"""
         message_obj = event.message_obj
         meqq = message_obj.sender.user_id
-        if meqq not in self.userdata:
+        if meqq not in self.userdata.keys():
             await self.new_user(meqq)
         if not self.userdata[meqq]["is_pass"]:
             yield event.plain_result("请你自己先通过白名单")
             return
-        if qq not in self.userdata:
+        if qq not in self.userdata.keys():
             await self.new_user(qq)
         userdata = self.userdata[qq]
         if userdata["is_banned"]:
@@ -329,7 +329,7 @@ class skinCodeAdmin(Star):
         if group_id not in self.groupdata["user"]:
             logger.info(f"群{group_id}未在配置文件中")
             return
-        if user_id not in self.userdata:
+        if user_id not in self.userdata.keys():
             await self.new_user(user_id)
         if self.userdata[user_id]["is_banned"]:
             await self.approve_request(event,flag,False,"你已被封禁，拒绝加入")
