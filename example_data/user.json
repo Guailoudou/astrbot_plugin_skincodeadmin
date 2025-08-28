@@ -1,0 +1,14 @@
+{
+    "1241593334":{
+        "id": "1241593334",
+        "code": "efsdsferrffsdf", // 邀请码 ，为空则表示未获取
+        "skin_uid": "1135", // 皮肤uid
+        "is_pass": true, // 是否通过审核
+        "is_banned": false, // 是否封禁
+        "superior": "1008654321", // 上级id
+        "subordinates": [ // 下级id
+            "1241593334",
+            "1241593334"
+        ]
+    }
+}
