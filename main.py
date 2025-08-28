@@ -25,7 +25,7 @@ class skinCodeAdmin(Star):
     async def init(self, event: AstrMessageEvent):
         await self.get_userdata_file()
         await self.get_groupdata_file()
-        event.stop_event()
+        yield event.plain_result("已重新读取数据文件")
 
     # 注册指令的装饰器。指令名为 helloworld。注册成功后，发送 `/helloworld` 就会触发这个指令，并回复 `你好, {user_name}!`
     @filter.permission_type(filter.PermissionType.ADMIN)
@@ -150,7 +150,7 @@ class skinCodeAdmin(Star):
     @filter.command("sync")
     async def sync(self, event: AstrMessageEvent):
         """同步皮肤站用户信息"""
-        _,used = await self.getcodes()
+        _,used = await self.getallcodes()
         
         for userdata in self.userdata.values():
             if userdata["code"]!="" and userdata["skin_uid"] == "":
