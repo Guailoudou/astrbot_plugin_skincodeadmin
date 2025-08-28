@@ -157,7 +157,7 @@ class skinCodeAdmin(Star):
                 for codeused in reversed(used):
                     if codeused["code"]==userdata["code"]:
                         userdata["skin_uid"]=codeused["used_by"]
-                        logger.info(f"同步用户{userdata['qq']}的皮肤站uid{codeused['used_by']}信息成功")
+                        logger.info(f"同步用户{userdata['id']}的皮肤站uid{codeused['used_by']}信息成功")
                         break
         yield event.plain_result(f"已成功同步所有皮肤站账号信息")
 
