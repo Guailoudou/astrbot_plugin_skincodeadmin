@@ -322,7 +322,7 @@ class skinCodeAdmin(Star):
         comment = request_data.get("comment", "")
         group_id = request_data.get("group_id", "")
         
-        logger.info(f"收到加群请求: 用户ID={user_id}, 群ID={group_id}, 验证信息={comment}")
+        logger.info(f"收到加群请求: 用户ID={user_id}, 群ID={group_id}, 验证信息={comment} ,请求标识={flag}")
         if group_id not in self.groupdata["user"]:
             logger.info(f"群{group_id}未在配置文件中")
             return
@@ -348,26 +348,11 @@ class skinCodeAdmin(Star):
             # 检查是否为aiocqhttp平台
             if event.get_platform_name() == "aiocqhttp":
                 # 使用NapCat API格式
-                from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
-                assert isinstance(event, AiocqhttpMessageEvent)
-                client = event.bot
-                
-                # 创建ApifoxModel实例
-                api_model = ApifoxModel(
-                    approve=approve,
-                    flag=flag,
-                    reason=reason
-                )
-                
-                # 调用NapCat API
-                payloads = {
-                    "flag": api_model.flag,
-                    "sub_type": "add",
-                    "approve": api_model.approve,
-                    "reason": api_model.reason if api_model.reason else ""
-                }
-                
-                await client.call_action('set_group_add_request', **payloads)
+                # from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
+                # assert isinstance(event, AiocqhttpMessageEvent)
+                client = event.bot           
+                await client.call_action('set_group_add_request', flag,approve,reason)
+                logger.info(f'已处理加群请求: {flag} {approve} {reason}')
                 return True
             # 兼容其他平台的处理方式
             elif event.bot and hasattr(event.bot, "call_action"):
