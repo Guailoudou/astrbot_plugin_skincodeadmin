@@ -14,8 +14,6 @@ class skinCodeAdmin(Star):
         self.groupdata_file = r"skinCode_group.json"
         self.userdata = {}
         self.groupdata = {}
-        # asyncio.run(self.init())
-
         logger.info("skincodeadmin插件初始化完成")
     async def initialize(self):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
