@@ -256,7 +256,6 @@ class skinCodeAdmin(Star):
         """保存用户数据到文件"""
         with open(self.userdata_file, "w", encoding="utf-8") as f:
             json.dump(self.userdata, f)
-            logger.info(f"保存用户数据到 {self.userdata_file}:{self.userdata}")
     async def save_groupdata(self):
         """保存群数据到文件"""
         with open(self.groupdata_file, "w", encoding="utf-8") as f:
