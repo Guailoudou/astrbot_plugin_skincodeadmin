@@ -328,10 +328,10 @@ class skinCodeAdmin(Star):
         group_id = request_data.get("group_id", "")
         
         logger.info(f"收到加群请求: 用户ID={user_id}, 群ID={group_id}, 验证信息={comment} ,请求标识={flag}")
-        if group_id not in self.groupdata["user"]:
+        if (group_id not in self.groupdata["user"]):
             logger.info(f"群{group_id}未在配置文件中")
             return
-        if user_id not in self.userdata.keys():
+        if (user_id not in self.userdata.keys()):
             await self.new_user(user_id)
         if self.userdata[user_id]["is_banned"]:
             await self.approve_request(event,flag,False,"你已被封禁，拒绝加入")
