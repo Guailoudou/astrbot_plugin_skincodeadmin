@@ -190,6 +190,8 @@ class skinCodeAdmin(Star):
             while self.userdata[superior]['superior'] != "":
                 superior = self.userdata[superior]['superior']
             data.append(superior)
+        else:
+            superior = qq
         #从最上级开始寻找所有下级，还有下级的下级，添加到data中、
         subdata = await self.getallsubordinate(superior)
         return data + subdata
