@@ -47,7 +47,7 @@ class skinCodeAdmin(Star):
             await self.new_user(qq)
         else:
             if(self.userdata[qq]["code"] != ""):
-                yield event.plain_result(f"你已经获取过邀请码了，请勿重复获取，你的邀请码是：{self.userdata[qq]["code"]}")
+                yield event.plain_result(f"你已经获取过邀请码了，请勿重复获取，你的邀请码是：{self.userdata[qq]['code']}")
                 return
         newcode = await self.getnewcode()
         self.userdata[qq]["code"] = newcode
