@@ -146,7 +146,7 @@ class skinCodeAdmin(Star):
     @filter.command("send")
     async def cmd_sendmsg(self, event: AstrMessageEvent,msg:str):
         """发送消息到消息群"""
-        await self.sendmsg(msg)
+        await self.sendmsg(event,msg)
         event.stop_event()
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("query")
