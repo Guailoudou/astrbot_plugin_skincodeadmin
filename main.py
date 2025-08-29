@@ -125,14 +125,29 @@ class skinCodeAdmin(Star):
             yield event.plain_result(f"已成功邀请用户{qq}，请注意，你们现在绑定为了上下级关系，一个犯事，联合处罚")
 
     @filter.permission_type(filter.PermissionType.ADMIN)
-    @filter.command("setusergroup")
+    @filter.command("sugroup")
     async def cmd_setusergroup(self, event: AstrMessageEvent):
+        """设置群为用户群，即限制白名单自动审批群，需要管理员权限"""
         raw_message = event.message_obj.raw_message
         group_id = raw_message.get("group_id", "")
         self.groupdata["user"].append(group_id)
         await self.save_groupdata()
         yield event.plain_result(f"已设置群{group_id}为用户群")
 
+    @filter.permission_type(filter.PermissionType.ADMIN)
+    @filter.command("smgroup")
+    async def cmd_setmsggroup(self, event: AstrMessageEvent):
+        """设置群为消息群"""
+        self.groupdata["msg"].append(event.unified_msg_origin)
+        await self.save_groupdata()
+        yield event.plain_result(f"已设置会话{event.unified_msg_origin}为通知群")
+
+    @filter.permission_type(filter.PermissionType.ADMIN)
+    @filter.command("send")
+    async def cmd_sendmsg(self, event: AstrMessageEvent,msg:str):
+        """发送消息到消息群"""
+        await self.sendmsg(msg)
+        event.stop_event()
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("query")
     async def cmd_query(self, event: AstrMessageEvent,qq:str):
@@ -252,7 +267,14 @@ class skinCodeAdmin(Star):
         }
         await self.save_userdata()
         logger.info(f"创建用户 {qq}")
-    
+    async def sendmsg(self,event: AstrMessageEvent,msg:str):
+        """发送消息给所有消息群"""
+        groups = self.groupdata["msg"]
+        chain = [
+            Comp.Plain(f"{msg}"),
+        ]
+        for group in groups:
+            await self.context.send_message(group,event.chain_result(chain))
     async def save_userdata(self):
         """保存用户数据到文件"""
         with open(self.userdata_file, "w", encoding="utf-8") as f:
@@ -271,7 +293,7 @@ class skinCodeAdmin(Star):
     async def get_groupdata_file(self):
         """获取群数据文件"""
         logger.info(f"正在读取群数据文件")
-        self.groupdata = await self.get_file(self.groupdata_file,{"user":[],"admin":[],"temp":[]})
+        self.groupdata = await self.get_file(self.groupdata_file,{"user":[],"admin":[],"temp":[],"msg":[]})
         logger.info(f"群数据文件读取完毕")
     async def get_file(self, dir ,init={}):
         """获取文件"""
