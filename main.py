@@ -288,7 +288,7 @@ class skinCodeAdmin(Star):
         else:
             user_name = event.get_sender_name()
         chain = [
-            Comp.Plain(f"[公告]\n{event.message_str[4:]}\n-by {user_name}"),
+            Comp.Plain(f"[公告]\n{event.message_str[5:]}\n-by {user_name}"),
         ]
         for group in groups:
             await self.context.send_message(group,event.chain_result(chain))
