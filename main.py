@@ -271,7 +271,7 @@ class skinCodeAdmin(Star):
         """发送消息给所有消息群"""
         groups = self.groupdata["msg"]
         chain = [
-            Comp.Plain(f"{msg}"),
+            Comp.Plain(f"[公告] {msg}"),
         ]
         for group in groups:
             await self.context.send_message(group,event.chain_result(chain))
