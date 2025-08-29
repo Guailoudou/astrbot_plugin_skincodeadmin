@@ -144,7 +144,7 @@ class skinCodeAdmin(Star):
 
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("send")
-    async def cmd_sendmsg(self, event: AstrMessageEvent,msg:str):
+    async def cmd_sendmsg(self, event: AstrMessageEvent,*msg:str):
         """发送消息到消息群"""
         await self.sendmsg(event,msg)
         event.stop_event()
@@ -277,8 +277,10 @@ class skinCodeAdmin(Star):
         }
         await self.save_userdata()
         logger.info(f"创建用户 {qq}")
-    async def sendmsg(self,event: AstrMessageEvent,msg:str):
+    async def sendmsg(self,event: AstrMessageEvent,msgs:tuple):
         """发送消息给所有消息群"""
+        for s in msgs:
+            msg = f"{s}\n"
         groups = self.groupdata["msg"]
         message_obj = event.message_obj
         qq = message_obj.sender.user_id
@@ -287,7 +289,7 @@ class skinCodeAdmin(Star):
         else:
             user_name = event.get_sender_name()
         chain = [
-            Comp.Plain(f"[公告] {msg} -by {user_name}"),
+            Comp.Plain(f"[公告]\n{msg}\n-by {user_name}"),
         ]
         for group in groups:
             await self.context.send_message(group,event.chain_result(chain))
