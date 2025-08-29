@@ -160,6 +160,15 @@ class skinCodeAdmin(Star):
         yield event.plain_result(msg)
         associated = await self.get_associated(qq)
         yield event.plain_result(f"所有相关联的QQ:{associated}")
+
+    @filter.command("setname")
+    async def cmd_setname(self, event: AstrMessageEvent, name: str):
+        """设置用户昵称"""
+        message_obj = event.message_obj
+        qq = message_obj.sender.user_id
+        self.userdata[qq]["name"] = name
+        await self.save_userdata()
+        yield event.plain_result(f"已设置昵称为{name}")
     
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("sync")
@@ -258,6 +267,7 @@ class skinCodeAdmin(Star):
         userdata = self.userdata
         userdata[qq]={
             "id": qq,
+            "name": "",
             "code": "",
             "skin_uid": "",
             "is_pass": False,
@@ -270,8 +280,14 @@ class skinCodeAdmin(Star):
     async def sendmsg(self,event: AstrMessageEvent,msg:str):
         """发送消息给所有消息群"""
         groups = self.groupdata["msg"]
+        message_obj = event.message_obj
+        qq = message_obj.sender.user_id
+        if(self.userdata[qq]["name"]!=""):
+            user_name = self.userdata[qq]["name"]
+        else:
+            user_name = event.get_sender_name()
         chain = [
-            Comp.Plain(f"[公告] {msg}"),
+            Comp.Plain(f"[公告] {msg} -by {user_name}"),
         ]
         for group in groups:
             await self.context.send_message(group,event.chain_result(chain))
