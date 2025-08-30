@@ -305,9 +305,11 @@ class skinCodeAdmin(Star):
         assert isinstance(event, AiocqhttpMessageEvent)
         logger.info(f"{event.unified_msg_origin[22:]}")
         logger.info(f"{event.message_obj.raw_message.get('message')}")
+        message = event.message_obj.raw_message.get("message")
+        message[0]["data"]["text"]=message[0]["data"]["text"][5:]
         payloads = {
                 "group_id": event.unified_msg_origin[22:],
-                "message": event.message_obj.raw_message.get("message"),
+                "message": message,
             }  
         await event.bot.call_action("send_group_msg", **payloads)
     async def save_userdata(self):
