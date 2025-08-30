@@ -305,7 +305,9 @@ class skinCodeAdmin(Star):
         message = event.message_obj.raw_message.get("message")
         if message[0]["type"]=="text":
             message[0]["data"]["text"]=message[0]["data"]["text"][6:]
+        upmsg = {"type": "text", "data": {"text": f"[信息推送]\n"}}
         endmsg = {"type": "text", "data": {"text": f"\n-by {user_name}"}}
+        message.insert(0, upmsg)
         message.append(endmsg)
         for group in groups:
             payloads = {
