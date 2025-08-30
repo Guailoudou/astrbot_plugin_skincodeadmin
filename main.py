@@ -297,9 +297,9 @@ class skinCodeAdmin(Star):
         # chain = [
         #     Comp.Plain(f"[消息推送]\n{event.message_str[5:]}\n-by {user_name}"),
         # ]
-        logger.info(f"{event.message_obj.raw_message}")
-        for group in groups:
-            await self.context.send_message(group,event.chain_result(chain))
+        # logger.info(f"{event.message_obj.raw_message}")
+        # for group in groups:
+        #     await self.context.send_message(group,event.chain_result(chain))
         from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
         assert isinstance(event, AiocqhttpMessageEvent)
         message = event.message_obj.raw_message.get("message")
