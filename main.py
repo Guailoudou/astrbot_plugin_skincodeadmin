@@ -304,9 +304,9 @@ class skinCodeAdmin(Star):
         assert isinstance(event, AiocqhttpMessageEvent)
         message = event.message_obj.raw_message.get("message")
         if message[0]["type"]=="text":
-            message[0]["data"]["text"]=message[0]["data"]["text"][6:]
+            message[0]["data"]["text"]=message[0]["data"]["text"][6:] + f"\n-by {user_name}"
         elif message[1]["type"]=="text":
-            message[1]["data"]["text"]=message[1]["data"]["text"][6:]
+            message[1]["data"]["text"]=message[1]["data"]["text"][6:] + f"\n-by {user_name}"
         # for group in groups:
             payloads = {
                     # "group_id": group[23:],
