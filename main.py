@@ -312,6 +312,22 @@ class skinCodeAdmin(Star):
                 "group_id": event.unified_msg_origin[22:],
                 "message": message,
             }  
+        payloads2 = {
+                "group_id": event.unified_msg_origin[22:],
+                "message": [{'type': 'text', 'data': {'text': '测试消息'}}],
+            }
+        payloads3 = {
+                "group_id": 558131541,
+                "message": [{'type': 'text', 'data': {'text': '测试消息'}}],
+            }
+        payloads4 = {
+                "group_id": "558131541",
+                "message": [{'type': 'text', 'data': {'text': '测试消息'}}],
+            }
+        await event.bot.call_action("send_group_msg", **payloads4)
+        await event.bot.call_action("send_group_msg", **payloads3)
+
+        await event.bot.call_action("send_group_msg", **payloads2)
         await event.bot.call_action("send_group_msg", **payloads)
     async def save_userdata(self):
         """保存用户数据到文件"""
