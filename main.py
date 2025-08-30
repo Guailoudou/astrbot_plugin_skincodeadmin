@@ -300,7 +300,14 @@ class skinCodeAdmin(Star):
         logger.info(f"{event.message_obj.raw_message}")
         # for group in groups:
         #     await self.context.send_message(group,event.chain_result(chain))
-        await self.context.send_message(event.unified_msg_origin,event.message_obj.raw_message)
+        # await self.context.send_message(event.unified_msg_origin,event.message_obj.raw_message)
+        from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
+        assert isinstance(event, AiocqhttpMessageEvent)
+        payloads = {
+                "group_id": event.unified_msg_origin[22:],
+                "message": event.message_obj.raw_message.get("message"),
+            }  
+        await event.bot.call_action("send_group_msg", **payloads)
     async def save_userdata(self):
         """保存用户数据到文件"""
         with open(self.userdata_file, "w", encoding="utf-8") as f:
