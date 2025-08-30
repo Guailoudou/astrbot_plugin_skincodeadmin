@@ -310,7 +310,7 @@ class skinCodeAdmin(Star):
         # for group in groups:
             payloads = {
                     # "group_id": group[23:],
-                    "group_id": event.unified_msg_origin[23:],
+                    "group_id": 347925464,
                     "message": message,
                 }  
 
