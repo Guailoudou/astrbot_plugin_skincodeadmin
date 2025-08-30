@@ -304,19 +304,15 @@ class skinCodeAdmin(Star):
         assert isinstance(event, AiocqhttpMessageEvent)
         message = event.message_obj.raw_message.get("message")
         if message[0]["type"]=="text":
-            message[0]["data"]["text"]=message[0]["data"]["text"][6:] 
-        elif message[1]["type"]=="text":
-            message[1]["data"]["text"]=message[1]["data"]["text"][6:] 
+            message[0]["data"]["text"]=message[0]["data"]["text"][6:]
         endmsg = {"type": "text", "data": {"text": f"\n-by {user_name}"}}
         message.append(endmsg)
-        # for group in groups:
-        payloads = {
-                # "group_id": group[23:],
-                "group_id": 347925464,
-                "message": message,
-            }  
-
-        await event.bot.call_action("send_group_msg", **payloads)
+        for group in groups:
+            payloads = {
+                    "group_id": group[23:],
+                    "message": message,
+                }  
+            await event.bot.call_action("send_group_msg", **payloads)
     async def save_userdata(self):
         """保存用户数据到文件"""
         with open(self.userdata_file, "w", encoding="utf-8") as f:
