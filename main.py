@@ -284,7 +284,7 @@ class skinCodeAdmin(Star):
         }
         await self.save_userdata()
         logger.info(f"创建用户 {qq}")
-    async def sendmsg(self,event: AstrMessageEvent,*msgs):
+    async def sendmsg(self,event: AstrMessageEvent):
         """发送消息给所有消息群"""
         
         groups = self.groupdata["msg"]
@@ -294,11 +294,13 @@ class skinCodeAdmin(Star):
             user_name = self.userdata[qq]["name"]
         else:
             user_name = event.get_sender_name()
-        chain = [
-            Comp.Plain(f"[消息推送]\n{event.message_str[5:]}\n-by {user_name}"),
-        ]
-        for group in groups:
-            await self.context.send_message(group,event.chain_result(chain))
+        # chain = [
+        #     Comp.Plain(f"[消息推送]\n{event.message_str[5:]}\n-by {user_name}"),
+        # ]
+        logger.info(f"{event.message_obj.raw_message}")
+        # for group in groups:
+        #     await self.context.send_message(group,event.chain_result(chain))
+        await self.context.send_message(event.unified_msg_origin,event.message_obj.raw_message)
     async def save_userdata(self):
         """保存用户数据到文件"""
         with open(self.userdata_file, "w", encoding="utf-8") as f:
