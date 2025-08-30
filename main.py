@@ -43,8 +43,7 @@ class skinCodeAdmin(Star):
     @filter.event_message_type(filter.EventMessageType.PRIVATE_MESSAGE) # 私聊
     @filter.command("getmecode", alias={'获取邀请码'})
     async def cmd_getnewcode(self, event: AstrMessageEvent):
-        """获取我的邀请码"""
-        
+        """获取我的邀请码，限制私聊"""
         message_obj = event.message_obj
         qq = message_obj.sender.user_id
         
@@ -134,13 +133,20 @@ class skinCodeAdmin(Star):
         await self.save_groupdata()
         yield event.plain_result(f"已设置群{group_id}为用户群")
 
-    @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("smgroup")
     async def cmd_setmsggroup(self, event: AstrMessageEvent):
         """设置群为消息群"""
         self.groupdata["msg"].append(event.unified_msg_origin)
         await self.save_groupdata()
         yield event.plain_result(f"已设置会话{event.unified_msg_origin}为通知群")
+
+    @filter.command("rmgroup")
+    async def cmd_rmmsggroup(self, event: AstrMessageEvent):
+        """取消群为消息群"""
+        # self.groupdata["msg"].append(event.unified_msg_origin)
+        self.groupdata["msg"].remove(event.unified_msg_origin)
+        await self.save_groupdata()
+        yield event.plain_result(f"已取消会话{event.unified_msg_origin}为通知群")
 
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("send")
@@ -288,7 +294,7 @@ class skinCodeAdmin(Star):
         else:
             user_name = event.get_sender_name()
         chain = [
-            Comp.Plain(f"[公告]\n{event.message_str[5:]}\n-by {user_name}"),
+            Comp.Plain(f"[消息推送]\n{event.message_str[5:]}\n-by {user_name}"),
         ]
         for group in groups:
             await self.context.send_message(group,event.chain_result(chain))
