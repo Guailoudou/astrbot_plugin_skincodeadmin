@@ -298,37 +298,23 @@ class skinCodeAdmin(Star):
         #     Comp.Plain(f"[消息推送]\n{event.message_str[5:]}\n-by {user_name}"),
         # ]
         logger.info(f"{event.message_obj.raw_message}")
-        # for group in groups:
-        #     await self.context.send_message(group,event.chain_result(chain))
-        # await self.context.send_message(event.unified_msg_origin,event.message_obj.raw_message)
+        for group in groups:
+            await self.context.send_message(group,event.chain_result(chain))
         from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
         assert isinstance(event, AiocqhttpMessageEvent)
-        logger.info(f"{event.unified_msg_origin[22:]}")
-        logger.info(f"{event.message_obj.raw_message.get('message')}")
         message = event.message_obj.raw_message.get("message")
-        message[0]["data"]["text"]=message[0]["data"]["text"][6:]
-        logger.info(f"{message}")
-        payloads = {
-                "group_id": event.unified_msg_origin[23:],
-                "message": message,
-            }  
-        # payloads2 = {
-        #         "group_id": event.unified_msg_origin[22:],
-        #         "message": [{'type': 'text', 'data': {'text': '测试消息'}}],
-        #     }
-        # payloads3 = {
-        #         "group_id": 558131541,
-        #         "message": [{'type': 'text', 'data': {'text': '测试消息'}}],
-        #     }
-        # payloads4 = {
-        #         "group_id": "558131541",
-        #         "message": [{'type': 'text', 'data': {'text': '测试消息'}}],
-        #     }
-        # await event.bot.call_action("send_group_msg", **payloads4)
-        # await event.bot.call_action("send_group_msg", **payloads3)
+        if message[0]["type"]=="text":
+            message[0]["data"]["text"]=message[0]["data"]["text"][6:]
+        elif message[1]["type"]=="text":
+            message[1]["data"]["text"]=message[1]["data"]["text"][6:]
+        # for group in groups:
+            payloads = {
+                    # "group_id": group[23:],
+                    "group_id": event.unified_msg_origin[23:],
+                    "message": message,
+                }  
 
-        # await event.bot.call_action("send_group_msg", **payloads2)
-        await event.bot.call_action("send_group_msg", **payloads)
+            await event.bot.call_action("send_group_msg", **payloads)
     async def save_userdata(self):
         """保存用户数据到文件"""
         with open(self.userdata_file, "w", encoding="utf-8") as f:
