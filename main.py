@@ -304,7 +304,7 @@ class skinCodeAdmin(Star):
         from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
         assert isinstance(event, AiocqhttpMessageEvent)
         logger.info(f"{event.unified_msg_origin[22:]}")
-        logger.info(f"{event.message_obj.raw_message.get("message")}")
+        logger.info(f"{event.message_obj.raw_message.get('message')}")
         payloads = {
                 "group_id": event.unified_msg_origin[22:],
                 "message": event.message_obj.raw_message.get("message"),
