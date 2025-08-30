@@ -308,13 +308,13 @@ class skinCodeAdmin(Star):
         elif message[1]["type"]=="text":
             message[1]["data"]["text"]=message[1]["data"]["text"][6:] + f"\n-by {user_name}"
         # for group in groups:
-            payloads = {
-                    # "group_id": group[23:],
-                    "group_id": 347925464,
-                    "message": message,
-                }  
+        payloads = {
+                # "group_id": group[23:],
+                "group_id": 347925464,
+                "message": message,
+            }  
 
-            await event.bot.call_action("send_group_msg", **payloads)
+        await event.bot.call_action("send_group_msg", **payloads)
     async def save_userdata(self):
         """保存用户数据到文件"""
         with open(self.userdata_file, "w", encoding="utf-8") as f:
