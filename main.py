@@ -307,6 +307,7 @@ class skinCodeAdmin(Star):
         logger.info(f"{event.message_obj.raw_message.get('message')}")
         message = event.message_obj.raw_message.get("message")
         message[0]["data"]["text"]=message[0]["data"]["text"][5:]
+        logger.info(f"{message}")
         payloads = {
                 "group_id": event.unified_msg_origin[22:],
                 "message": message,
