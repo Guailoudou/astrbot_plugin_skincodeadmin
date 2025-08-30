@@ -206,6 +206,7 @@ class skinCodeAdmin(Star):
         msg = f"{qq}的相关用户信息:"
         userdata = self.userdata[qq]
         msg += f"\n用户id:{userdata['id']}"
+        msg += f"\n用户昵称:{userdata['name']}"
         msg += f"\n皮肤站邀请码:{userdata['code']}"
         msg += f"\n皮肤站uid:{userdata['skin_uid']}"
         msg += f"\n是否通过审核:{userdata['is_pass']}"
