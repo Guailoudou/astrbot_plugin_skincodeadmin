@@ -14,6 +14,7 @@ class skinCodeAdmin(Star):
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.userdata_file = self.data_dir / r"skinCode_user.json"
         self.groupdata_file = self.data_dir / r"skinCode_group.json"
+        logger.info(f"初始化用户数据文件{self.userdata_file}and 群组数据文件{self.groupdata_file}成功")
         self.userdata = {}
         self.groupdata = {}
         
