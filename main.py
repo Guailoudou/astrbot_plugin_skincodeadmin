@@ -1,5 +1,5 @@
 from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
-from astrbot.api.star import Context, Star, register
+from astrbot.api.star import Context, Star, register,StarTools
 from astrbot.api import logger,AstrBotConfig
 import astrbot.api.message_components as Comp
 import os,aiohttp,json,asyncio
@@ -10,8 +10,10 @@ class skinCodeAdmin(Star):
     def __init__(self, context: Context,config: AstrBotConfig):
         super().__init__(context)
         self.config = config
-        self.userdata_file = r"skinCode_user.json"
-        self.groupdata_file = r"skinCode_group.json"
+        self.data_dir = StarTools.get_data_dir()
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.userdata_file = self.data_dir / r"skinCode_user.json"
+        self.groupdata_file = self.data_dir / r"skinCode_group.json"
         self.userdata = {}
         self.groupdata = {}
         
