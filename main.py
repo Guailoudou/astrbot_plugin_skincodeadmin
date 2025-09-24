@@ -320,7 +320,8 @@ class skinCodeAdmin(Star):
                 }  
             logger.info(f"群{group[23:]}发送")
             try:
-                await event.bot.call_action("get_group_info", **payloads)
+                await event.bot.call_action("send_group_msg", **payloads)
+                logger.info(f"群{group[23:]}已发送")
             except Exception as e:
                 logger.info(f"群{group[23:]}发送失败：{e}")
     async def save_userdata(self):
