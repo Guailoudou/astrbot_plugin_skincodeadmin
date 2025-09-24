@@ -312,6 +312,7 @@ class skinCodeAdmin(Star):
         endmsg = {"type": "text", "data": {"text": f"\n-by {user_name}"}}
         message.insert(0, upmsg)
         message.append(endmsg)
+        logger.info(message)
         for group in groups:
             payloads = {
                     "group_id": group[23:],
@@ -320,7 +321,7 @@ class skinCodeAdmin(Star):
             try:
                 await event.bot.call_action("get_group_info", **payloads)
             except Exception as e:
-                logger.error(f"群{group}发送失败：{e}")
+                logger.info(f"群{group}发送失败：{e}")
     async def save_userdata(self):
         """保存用户数据到文件"""
         with open(self.userdata_file, "w", encoding="utf-8") as f:
