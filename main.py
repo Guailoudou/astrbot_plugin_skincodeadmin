@@ -321,7 +321,7 @@ class skinCodeAdmin(Star):
                                         {
                                             "type": "node",
                                             "data": {
-                                                "user_id": user_name,
+                                                "user_id": qq,
                                                 "nickname": user_name,
                                                 "content": message
                                                 
@@ -335,7 +335,7 @@ class skinCodeAdmin(Star):
                                 ],
                                 "prompt": "群发公告信息",
                                 "summary": f"查看最新公告信息 -by {user_name}",
-                                "source": user_name
+                                "source": "小游戏bot群发公告信息"
                         }  
             logger.info(f"群{group[23:]}发送")
             try:
