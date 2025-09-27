@@ -313,14 +313,24 @@ class skinCodeAdmin(Star):
         message.insert(0, upmsg)
         message.append(endmsg)
         logger.info(message)
+        groups = ["aiocqhttp:GroupMessage:233491069"] #测试用
         for group in groups:
             payloads = {
-                    "group_id": group[23:],
-                    "message": message,
-                }  
+                        "group_id": group[23:],
+                        "message": [message],
+                        "news": [
+                                    {
+                                        "text": f"{user_name}:群发公告信息"
+                                    }
+                                ],
+                                "prompt": "群发公告信息",
+                                "summary": f"查看最新公告信息 -by {user_name}",
+                                "source": user_name
+                        }  
             logger.info(f"群{group[23:]}发送")
             try:
-                await event.bot.call_action("send_group_msg", **payloads)
+                # await event.bot.call_action("send_group_msg", **payloads)
+                await event.bot.call_action("send_group_forward_msg", **payloads)
                 logger.info(f"群{group[23:]}已发送")
             except Exception as e:
                 logger.info(f"群{group[23:]}发送失败：{e}")
