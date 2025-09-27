@@ -317,7 +317,18 @@ class skinCodeAdmin(Star):
         for group in groups:
             payloads = {
                         "group_id": group[23:],
-                        "message": [message],
+                        "messages": [
+                                        {
+                                            "type": "node",
+                                            "data": {
+                                                "user_id": user_name,
+                                                "nickname": user_name,
+                                                "content": [
+                                                   message
+                                                ]
+                                            }
+                                        }
+                                    ],
                         "news": [
                                     {
                                         "text": f"{user_name}:群发公告信息"
