@@ -310,32 +310,32 @@ class skinCodeAdmin(Star):
             message[0]["data"]["text"]=message[0]["data"]["text"][6:]
         upmsg = {"type": "text", "data": {"text": f"[转发信息]\n"}}
         endmsg = {"type": "text", "data": {"text": f"\n-by {user_name}"}}
-        message.insert(0, upmsg)
+        # message.insert(0, upmsg)
         message.append(endmsg)
         logger.info(message)
-        groups = ["aiocqhttp:GroupMessage:233491069"] #测试用
+        # groups = ["aiocqhttp:GroupMessage:233491069"] #测试用
         for group in groups:
             payloads = {
-                        "group_id": group[23:],
-                        "messages": [
-                                        {
-                                            "type": "node",
-                                            "data": {
-                                                "user_id": qq,
-                                                "nickname": user_name,
-                                                "content": message
-                                                
+                            "group_id": group[23:],
+                            "messages": [
+                                            {
+                                                "type": "node",
+                                                "data": {
+                                                    "user_id": qq,
+                                                    "nickname": user_name,
+                                                    "content": message
+                                                    
+                                                }
                                             }
+                                        ],
+                            "news": [
+                                        {
+                                            "text": f"{user_name}:[公告]"
                                         }
                                     ],
-                        "news": [
-                                    {
-                                        "text": f"{user_name}:群发公告信息"
-                                    }
-                                ],
-                                "prompt": "群发公告信息",
-                                "summary": f"查看最新公告信息 -by {user_name}",
-                                "source": "小游戏bot群发公告信息"
+                            "prompt": "群发公告信息",
+                            "summary": f"点我查看最新公告信息",
+                            "source": "小游戏群bot群发活动公告信息"
                         }  
             logger.info(f"群{group[23:]}发送")
             try:
