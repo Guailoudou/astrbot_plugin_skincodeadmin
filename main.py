@@ -323,9 +323,8 @@ class skinCodeAdmin(Star):
                                             "data": {
                                                 "user_id": user_name,
                                                 "nickname": user_name,
-                                                "content": [
-                                                   message
-                                                ]
+                                                "content": message
+                                                
                                             }
                                         }
                                     ],
