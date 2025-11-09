@@ -175,6 +175,8 @@ class skinCodeAdmin(Star):
         """设置用户昵称"""
         message_obj = event.message_obj
         qq = message_obj.sender.user_id
+        if (qq not in self.userdata.keys()):
+            await self.new_user(qq)
         self.userdata[qq]["name"] = name
         await self.save_userdata()
         yield event.plain_result(f"已设置昵称为{name}")
@@ -293,6 +295,8 @@ class skinCodeAdmin(Star):
         groups = self.groupdata["msg"]
         message_obj = event.message_obj
         qq = message_obj.sender.user_id
+        if (qq not in self.userdata.keys()):
+            await self.new_user(qq)
         if(self.userdata[qq]["name"]!=""):
             user_name = self.userdata[qq]["name"]
         else:
