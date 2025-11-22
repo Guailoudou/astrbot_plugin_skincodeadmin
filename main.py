@@ -319,6 +319,7 @@ class skinCodeAdmin(Star):
         logger.info(message)
         # groups = ["aiocqhttp:GroupMessage:233491069"] #测试用
         for group in groups:
+            if(group==event.unified_msg_origin):continue
             payloads = {
                             "group_id": group[23:],
                             "messages": [
