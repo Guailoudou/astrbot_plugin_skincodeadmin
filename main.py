@@ -51,7 +51,7 @@ class skinCodeAdmin(Star):
         message_obj = event.message_obj
         qq = message_obj.sender.user_id
         logger.info(f"获取用户{qq}的等级")
-        
+
         qqlevel = await self.getqqLevel(event,qq)
         if(qqlevel < 15):
             yield event.plain_result("你没有权限使用此功能,QQ等级过低")
@@ -484,7 +484,7 @@ class skinCodeAdmin(Star):
                 }         
                 ret = await client.call_action('get_stranger_info', **payloads)
                 logger.info(f'已成功获取qq信息:{ret}')
-                qqlevel = ret.data.qqLevel
+                qqlevel = ret.qqLevel
                 logger.info(f'已成功获取qq等级:{qqlevel}')
                 return qqlevel
     async def terminate(self):
