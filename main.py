@@ -62,11 +62,13 @@ class skinCodeAdmin(Star):
         else:
             if(self.userdata[qq]["code"] != ""):
                 yield event.plain_result(f"你已经获取过邀请码了，请勿重复获取，你的邀请码是：{self.userdata[qq]['code']}")
+                yield event.plain_result("请前往皮肤站注册:http://159.75.151.23/")
                 return
         newcode = await self.getnewcode()
         self.userdata[qq]["code"] = newcode
         await self.save_userdata()
         yield event.plain_result(f"这是你的邀请码: {newcode}")
+        yield event.plain_result("请前往皮肤站注册:http://159.75.151.23/")
     
 
     @filter.permission_type(filter.PermissionType.ADMIN)
