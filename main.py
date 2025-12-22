@@ -483,8 +483,8 @@ class skinCodeAdmin(Star):
                     "user_id": qq
                 }         
                 ret = await client.call_action('get_stranger_info', **payloads)
-                logger.info(f'已成功获取qq信息:{ret}')
-                qqlevel = json.loads(ret).qqLevel
+                logger.info(f'已成功获取qq信息: {ret}')
+                qqlevel = ret['qqLevel']
                 logger.info(f'已成功获取qq等级:{qqlevel}')
                 return qqlevel
     async def terminate(self):
