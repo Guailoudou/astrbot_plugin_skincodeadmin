@@ -477,7 +477,7 @@ class skinCodeAdmin(Star):
                 assert isinstance(event, AiocqhttpMessageEvent)
                 client = event.bot  
                 payloads = {
-                    "userid": qq
+                    "user_id": qq
                 }         
                 ret = await client.call_action('get_stranger_info', **payloads)
                 logger.info(f'已成功获取qq信息:{ret}')
