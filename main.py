@@ -50,9 +50,12 @@ class skinCodeAdmin(Star):
         """获取我的邀请码，限制私聊"""
         message_obj = event.message_obj
         qq = message_obj.sender.user_id
+        logger.info(f"获取用户{qq}的等级")
+        
         qqlevel = await self.getqqLevel(event,qq)
         if(qqlevel < 15):
             yield event.plain_result("你没有权限使用此功能,QQ等级过低")
+            return
         if(qq not in self.userdata.keys()):
             yield event.plain_result(f"获取中，请稍后...")
             await self.new_user(qq)
