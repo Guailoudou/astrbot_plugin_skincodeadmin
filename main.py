@@ -2,6 +2,7 @@ from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
 from astrbot.api.star import Context, Star, register,StarTools
 from astrbot.api import logger,AstrBotConfig
 import astrbot.api.message_components as Comp
+from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
 import os,aiohttp,json,asyncio
 
 
@@ -49,7 +50,9 @@ class skinCodeAdmin(Star):
         """获取我的邀请码，限制私聊"""
         message_obj = event.message_obj
         qq = message_obj.sender.user_id
-        
+        qqlevel = await self.getqqLevel(event,qq)
+        if(qqlevel < 15):
+            yield event.plain_result("你没有权限使用此功能,QQ等级过低")
         if(qq not in self.userdata.keys()):
             yield event.plain_result(f"获取中，请稍后...")
             await self.new_user(qq)
@@ -307,7 +310,7 @@ class skinCodeAdmin(Star):
         # logger.info(f"{event.message_obj.raw_message}")
         # for group in groups:
         #     await self.context.send_message(group,event.chain_result(chain))
-        from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
+        # from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
         assert isinstance(event, AiocqhttpMessageEvent)
         message = event.message_obj.raw_message.get("message")
         if message[0]["type"]=="text":
@@ -450,7 +453,7 @@ class skinCodeAdmin(Star):
             # 检查是否为aiocqhttp平台
             if event.get_platform_name() == "aiocqhttp":
                 # 使用NapCat API格式
-                from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
+                # from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
                 assert isinstance(event, AiocqhttpMessageEvent)
                 client = event.bot  
                 payloads = {
@@ -466,6 +469,20 @@ class skinCodeAdmin(Star):
         except Exception as e:
             logger.error(f"处理群聊申请失败: {e}")
             return False
-        
+    
+    async def getqqLevel(self, event: AstrMessageEvent,qq):
+        if event.get_platform_name() == "aiocqhttp":
+                # 使用NapCat API格式
+                # from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_eve nt import AiocqhttpMessageEvent
+                assert isinstance(event, AiocqhttpMessageEvent)
+                client = event.bot  
+                payloads = {
+                    "userid": qq
+                }         
+                ret = await client.call_action('get_stranger_info', **payloads)
+                logger.info(f'已成功获取qq信息:{ret}')
+                qqlevel = ret.data.qqLevel
+                logger.info(f'已成功获取qq等级:{qqlevel}')
+                return qqlevel
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
