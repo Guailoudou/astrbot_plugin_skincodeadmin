@@ -171,7 +171,8 @@ class skinCodeAdmin(Star):
         """查询用户信息"""
         msg = f"{qq}的相关用户信息:"
         if len(qq)<5:
-            msg = await self.qusery_uid(event,qq)
+            msg += await self.qusery_uid(event,qq)
+            logger.info(f"获取到msg:{msg}")
             yield event.plain_result(msg)
             return
         if(qq not in self.userdata.keys()):
