@@ -242,7 +242,7 @@ class skinCodeAdmin(Star):
             if userdata['skin_uid'] == uid:
                 msg = await self.query(event, qq)
                 return msg
-        yield event.plain_result(f"未找到uid为{uid}的用户")
+        # yield event.plain_result(f"未找到uid为{uid}的用户")
     async def get_associated(self, qq: str):
         """获取所有关联的用户"""
         userdata = self.userdata[qq]
