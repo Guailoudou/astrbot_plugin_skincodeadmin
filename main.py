@@ -108,7 +108,7 @@ class skinCodeAdmin(Star):
         await self.setban(qq,False)
         yield event.plain_result(f"已解封用户{qq}")
 
-    @filter.command("invite")
+    @filter.command("invite", alias={'邀请'})
     async def cmd_invite(self, event: AstrMessageEvent, qq: str):
         """邀请用户"""
         message_obj = event.message_obj
@@ -166,15 +166,21 @@ class skinCodeAdmin(Star):
         await self.sendmsg(event)
         event.stop_event()
     @filter.permission_type(filter.PermissionType.ADMIN)
-    @filter.command("query")
+    @filter.command("query", alias={'查询'})
     async def cmd_query(self, event: AstrMessageEvent,qq:str):
         """查询用户信息"""
         msg = f"{qq}的相关用户信息:"
+        if len(qq)<5:
+            msg = await self.qusery_uid(event,qq)
+            yield event.plain_result(msg)
+            return
         if(qq not in self.userdata.keys()):
             yield event.plain_result(msg+"无信息")
             return
+        
         msg = await self.query(event,qq)
         yield event.plain_result(msg)
+
         associated = await self.get_associated(qq)
         yield event.plain_result(f"所有相关联的QQ:{associated}")
 
@@ -230,6 +236,13 @@ class skinCodeAdmin(Star):
             msg += f"{ins}，"
         return msg
 
+    async def qusery_uid(self, event: AstrMessageEvent, uid: str):
+        """查询用户信息"""
+        for qq, userdata in self.userdata.items():
+            if userdata["skin_uid"] == uid:
+                msg = await self.query(event, qq)
+                return msg
+        yield event.plain_result(f"未找到uid为{uid}的用户")
     async def get_associated(self, qq: str):
         """获取所有关联的用户"""
         userdata = self.userdata[qq]
