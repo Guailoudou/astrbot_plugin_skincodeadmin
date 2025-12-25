@@ -41,7 +41,7 @@ class skinCodeAdmin(Star):
         # message_chain = event.get_messages() # 用户所发的消息的消息链 # from astrbot.api.message_components import *
         # logger.info(message_chain)
         free,used = await self.getallcodes()
-        yield event.plain_result(f"剩余{len(free)} \n\n 已使用{len(used)}")
+        yield event.plain_result(f"剩余{len(free)}\n已使用{len(used)}")
         # yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!") # 发送一条纯文本消息
 
     @filter.event_message_type(filter.EventMessageType.PRIVATE_MESSAGE) # 私聊
@@ -240,8 +240,8 @@ class skinCodeAdmin(Star):
     async def qusery_uid(self, event: AstrMessageEvent, uid: str):
         """查询用户信息"""
         for userdata in self.userdata.items():
-            if userdata['skin_uid'] == uid:
-                msg = await self.query(event, userdata['id'])
+            if userdata["skin_uid"] == uid:
+                msg = await self.query(event, userdata["id"])
                 return msg
         return f"未找到uid为{uid}的用户"
     async def get_associated(self, qq: str):
