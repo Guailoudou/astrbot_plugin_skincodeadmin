@@ -239,7 +239,7 @@ class skinCodeAdmin(Star):
     async def qusery_uid(self, event: AstrMessageEvent, uid: str):
         """查询用户信息"""
         for qq, userdata in self.userdata.items():
-            if userdata["skin_uid"] == uid:
+            if userdata['skin_uid'] == uid:
                 msg = await self.query(event, qq)
                 return msg
         yield event.plain_result(f"未找到uid为{uid}的用户")
