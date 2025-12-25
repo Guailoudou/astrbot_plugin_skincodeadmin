@@ -239,7 +239,7 @@ class skinCodeAdmin(Star):
 
     async def qusery_uid(self, event: AstrMessageEvent, uid: str):
         """查询用户信息"""
-        for userdata in self.userdata.items():
+        for userdata in self.userdata.values():
             if userdata["skin_uid"] == uid:
                 msg = await self.query(event, userdata["id"])
                 return msg
