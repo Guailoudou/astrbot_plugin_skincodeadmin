@@ -6,7 +6,7 @@ from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import Aioc
 import os,aiohttp,json,asyncio
 
 
-@register("skinCodeAdmin", "Guailoudou", "一个简单的 Hello World 插件", "1.0.0")
+@register("skinCodeAdmin", "Guailoudou", "皮肤站管理和群管理群发信息", "0.2.5")
 class skinCodeAdmin(Star):
     def __init__(self, context: Context,config: AstrBotConfig):
         super().__init__(context)
@@ -148,11 +148,13 @@ class skinCodeAdmin(Star):
     async def cmd_setmsggroup(self, event: AstrMessageEvent):
         """设置群为消息群"""
         if(event.unified_msg_origin not in self.groupdata["msg"]):
-            self.groupdata["msg"].append(event.unified_msg_origin)
+            raw_message = event.message_obj.raw_message
+            group_id = raw_message.get("group_id", "")
+            self.groupdata["msg"].append(group_id)
             await self.save_groupdata()
-            yield event.plain_result(f"已设置会话{event.unified_msg_origin}为通知群")
+            yield event.plain_result(f"已设置{group_id}为通知群")
         else:
-            yield event.plain_result(f"群{event.unified_msg_origin}已经是消息群")
+            yield event.plain_result(f"群{group_id}已经是消息群")
 
     @filter.command("rmgroup", alias={'取消为消息群'})
     async def cmd_rmmsggroup(self, event: AstrMessageEvent):
@@ -349,7 +351,7 @@ class skinCodeAdmin(Star):
         for group in groups:
             if(group==event.unified_msg_origin):continue
             payloads = {
-                            "group_id": group[23:],
+                            "group_id": group,
                             "messages": [
                                             {
                                                 "type": "node",
@@ -370,13 +372,13 @@ class skinCodeAdmin(Star):
                             "summary": f"点我查看最新公告信息",
                             "source": "小游戏群bot群发活动公告信息"
                         }  
-            logger.info(f"群{group[23:]}发送")
+            logger.info(f"群{group}发送")
             try:
                 # await event.bot.call_action("send_group_msg", **payloads)
                 await event.bot.call_action("send_group_forward_msg", **payloads)
-                logger.info(f"群{group[23:]}已发送")
+                logger.info(f"群{group}已发送")
             except Exception as e:
-                logger.info(f"群{group[23:]}发送失败：{e}")
+                logger.info(f"群{group}发送失败：{e}")
     async def save_userdata(self):
         """保存用户数据到文件"""
         with open(self.userdata_file, "w", encoding="utf-8") as f:
