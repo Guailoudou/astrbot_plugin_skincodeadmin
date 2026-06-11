@@ -6,7 +6,7 @@ from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import Aioc
 import os,aiohttp,json,asyncio
 
 
-@register("skinCodeAdmin", "Guailoudou", "皮肤站管理和群管理群发信息", "0.2.5")
+@register("skinCodeAdmin", "Guailoudou", "皮肤站管理和群管理群发信息", "0.2.6")
 class skinCodeAdmin(Star):
     def __init__(self, context: Context,config: AstrBotConfig):
         super().__init__(context)
@@ -64,7 +64,10 @@ class skinCodeAdmin(Star):
                 yield event.plain_result(f"你已经获取过邀请码了，请勿重复获取，你的邀请码是：{self.userdata[qq]['code']}")
                 yield event.plain_result("请前往皮肤站注册:http://159.75.151.23/")
                 return
-        newcode = await self.getnewcode()
+        newcode = await self.getnewcode(qq)
+        if not newcode:
+            yield event.plain_result("获取邀请码失败，请联系管理员")
+            return
         self.userdata[qq]["code"] = newcode
         await self.save_userdata()
         yield event.plain_result(f"这是你的邀请码: {newcode}")
@@ -292,17 +295,39 @@ class skinCodeAdmin(Star):
         userdata["is_banned"] = isban
         await self.save_userdata()
 
-    async def getnewcode(self):
-        """获取新的邀请码"""
-        free,_ = await self.getallcodes()
-        for code in free:
-            isfree = True
-            for data in self.userdata.values():
-                if data["code"] == code["code"]:
-                    isfree = False
-                    break
-            if isfree:
-                return code["code"]
+    async def getnewcode(self, qq):
+        """获取新的邀请码（通过管理员接口）"""
+        admin_api_url = self.config.admin_api_url
+        admin_password = self.config.admin_password
+        
+        if not admin_api_url or not admin_password:
+            logger.error("配置缺失：admin_api_url 或 admin_password")
+            return None
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                data = {
+                    "action": "admin_direct_assign",
+                    "qq": str(qq),
+                    "admin_password": admin_password
+                }
+                logger.info(f"请求邀请码: {admin_api_url}, qq={qq}")
+                async with session.post(admin_api_url, data=data) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                        if result.get("success"):
+                            code = result["data"].get("code")
+                            logger.info(f"获取邀请码成功: {code}")
+                            return code
+                        else:
+                            logger.error(f"获取邀请码失败: {result.get('message')}")
+                            return None
+                    else:
+                        logger.error(f"请求失败: {response.status}")
+                        return None
+        except Exception as e:
+            logger.error(f"请求失败: {e}")
+            return None
 
     async def new_user(self, qq: str ):
         """创建新的用户信息"""

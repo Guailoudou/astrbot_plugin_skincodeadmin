@@ -1,8 +1,20 @@
 {
   "api_url": {
-    "description": "获取邀请码的api地址",
+    "description": "皮肤站邀请码API地址",
     "type": "string",
-    "hint": "填api",
+    "hint": "填皮肤站API地址",
+    "obvious_hint": true
+  },
+  "admin_api_url": {
+    "description": "管理后台API地址",
+    "type": "string",
+    "hint": "填管理后台api.php地址",
+    "obvious_hint": true
+  },
+  "admin_password": {
+    "description": "管理员密码",
+    "type": "string",
+    "hint": "填管理员密码",
     "obvious_hint": true
   }
 }
