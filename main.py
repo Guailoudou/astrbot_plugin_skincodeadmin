@@ -522,18 +522,23 @@ class skinCodeAdmin(Star):
             logger.error(f"处理群聊申请失败: {e}")
             return False
     
-    async def getqqLevel(self, event: AstrMessageEvent,qq):
-        if event.get_platform_name() == "aiocqhttp":
-                # 使用NapCat API格式
-                # from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_eve nt import AiocqhttpMessageEvent
-                assert isinstance(event, AiocqhttpMessageEvent)
-                client = event.bot  
-                payloads = {
-                    "user_id": qq
-                }         
-                ret = await client.call_action('get_stranger_info', **payloads)
-                qqlevel = ret['qqLevel']
-                logger.info(f'已成功获取qq等级:{qqlevel}')
-                return qqlevel
+    async def getqqLevel(self, event: AstrMessageEvent, qq):
+        """通过外部API获取QQ等级"""
+        url = f"https://uapis.cn/api/v1/social/qq/userinfo?qq={qq}"
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        qqlevel = data.get("qq_level", data.get("qqLevel", 0))
+                        logger.info(f"已成功获取QQ等级: {qqlevel}")
+                        return int(qqlevel)
+                    else:
+                        logger.error(f"请求QQ信息失败: {response.status}")
+                        return 0
+        except Exception as e:
+            logger.error(f"获取QQ等级失败: {e}")
+            return 0
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
