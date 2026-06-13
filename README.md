@@ -6,6 +6,62 @@
 
 这是一个 AstrBot 插件，用于管理皮肤站邀请码和 QQ 群组白名单。支持邀请码自动分配、用户白名单审核、群组加群自动审批、消息群发等功能。
 
+## 配置
+
+在 AstrBot 插件设置中填写以下配置项：
+
+| 配置项 | 说明 | 示例 |
+|--------|------|------|
+| `api_url` | 皮肤站邀请码 API 地址 | `http://example.com/api.php` |
+| `admin_api_url` | 皮肤站管理后台 API 地址（用于获取邀请码） | `http://example.com/api.php` |
+| `admin_password` | 皮肤站管理员密码 | `your_admin_password` |
+
+### API 接口说明
+
+#### api_url（邀请码列表接口）
+
+- **请求方式**: `GET`
+- **返回示例**:
+```json
+{
+  "free": [
+    {"code": "ABC123"},
+    {"code": "DEF456"}
+  ],
+  "used": [
+    {"code": "XYZ789", "used_by": "10001"}
+  ]
+}
+```
+
+#### admin_api_url（邀请码分配接口）
+
+- **请求方式**: `POST`
+- **请求参数**:
+  | 参数 | 说明 |
+  |------|------|
+  | `action` | 固定值 `admin_direct_assign` |
+  | `qq` | 用户 QQ 号 |
+  | `admin_password` | 管理员密码（对应配置的 `admin_password`） |
+
+- **返回示例（成功）**:
+```json
+{
+  "success": true,
+  "data": {
+    "code": "ABC123"
+  }
+}
+```
+
+- **返回示例（失败）**:
+```json
+{
+  "success": false,
+  "message": "错误信息"
+}
+```
+
 ## 指令列表
 
 | 指令 | 别名 | 权限要求 | 说明 | 参数 |
