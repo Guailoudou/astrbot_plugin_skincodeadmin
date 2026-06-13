@@ -6,7 +6,7 @@ from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import Aioc
 import os,aiohttp,json,asyncio
 
 
-@register("skinCodeAdmin", "Guailoudou", "皮肤站管理和群管理群发信息", "0.2.6")
+@register("skinCodeAdmin", "Guailoudou", "皮肤站管理和群管理群发信息", "0.2.7")
 class skinCodeAdmin(Star):
     def __init__(self, context: Context,config: AstrBotConfig):
         super().__init__(context)
@@ -146,6 +146,17 @@ class skinCodeAdmin(Star):
         self.groupdata["user"].append(group_id)
         await self.save_groupdata()
         yield event.plain_result(f"已设置群{group_id}为用户群")
+    
+
+    @filter.permission_type(filter.PermissionType.ADMIN)
+    @filter.command("rugroup")
+    async def cmd_rmusergroup(self, event: AstrMessageEvent):
+        """取消群为用户群"""
+        raw_message = event.message_obj.raw_message
+        group_id = raw_message.get("group_id", "")
+        self.groupdata["user"].remove(group_id)
+        await self.save_groupdata()
+        yield event.plain_result(f"已取消群{group_id}为用户群")
 
     @filter.command("smgroup", alias={'设置为消息群'})
     async def cmd_setmsggroup(self, event: AstrMessageEvent):
@@ -164,14 +175,16 @@ class skinCodeAdmin(Star):
         """取消群为消息群"""
         # self.groupdata["msg"].append(event.unified_msg_origin)
         if(event.unified_msg_origin in self.groupdata["msg"]):
-            self.groupdata["msg"].remove(event.unified_msg_origin)
+            raw_message = event.message_obj.raw_message
+            group_id = raw_message.get("group_id", "")
+            self.groupdata["msg"].remove(group_id)
             await self.save_groupdata()
-            yield event.plain_result(f"已取消会话{event.unified_msg_origin}为通知群")
+            yield event.plain_result(f"已取消群{group_id}为通知群")
         else:
-            yield event.plain_result(f"群{event.unified_msg_origin}不是消息群")
+            yield event.plain_result(f"群{group_id}不是消息群")
 
     @filter.permission_type(filter.PermissionType.ADMIN)
-    @filter.command("send")
+    @filter.command("send", alias={'推送'})
     async def cmd_sendmsg(self, event: AstrMessageEvent):
         """发送消息到消息群"""
         await self.sendmsg(event)
