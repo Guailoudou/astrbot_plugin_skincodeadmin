@@ -6,7 +6,7 @@ from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import Aioc
 import os,aiohttp,json,asyncio
 
 
-@register("skinCodeAdmin", "Guailoudou", "皮肤站管理和群管理群发信息", "0.2.7")
+@register("skinCodeAdmin", "Guailoudou", "皮肤站管理和群管理群发信息", "0.2.8")
 class skinCodeAdmin(Star):
     def __init__(self, context: Context,config: AstrBotConfig):
         super().__init__(context)
@@ -24,9 +24,11 @@ class skinCodeAdmin(Star):
         await self.get_userdata_file()
         await self.get_groupdata_file()
         logger.info("skincodeadmin插件初始化完成")
+
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("code_init")
     async def init(self, event: AstrMessageEvent):
+        """重新读取数据文件"""
         await self.get_userdata_file()
         await self.get_groupdata_file()
         yield event.plain_result("已重新读取数据文件")
@@ -193,10 +195,18 @@ class skinCodeAdmin(Star):
         else:
             yield event.plain_result(f"群{group_id}不是消息群")
 
-    @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("send", alias={'推送'})
     async def cmd_sendmsg(self, event: AstrMessageEvent):
         """发送消息到消息群"""
+        message_obj = event.message_obj
+        qq = message_obj.sender.user_id
+        if qq not in self.userdata.keys():
+            await self.new_user(qq)
+        
+        if not (event.is_admin() or self.userdata[qq].get("ismsgop", False)):
+            yield event.plain_result("你没有权限使用此功能")
+            return
+            
         await self.sendmsg(event)
         event.stop_event()
     @filter.permission_type(filter.PermissionType.ADMIN)
@@ -230,6 +240,26 @@ class skinCodeAdmin(Star):
         await self.save_userdata()
         yield event.plain_result(f"已设置昵称为{name}")
     
+    @filter.permission_type(filter.PermissionType.ADMIN)
+    @filter.command("setmsgop")
+    async def cmd_setmsgop(self, event: AstrMessageEvent, qq: str):
+        """设置用户消息推送权限"""
+        if qq not in self.userdata.keys():
+            await self.new_user(qq)
+        self.userdata[qq]["ismsgop"] = True
+        await self.save_userdata()
+        yield event.plain_result(f"已设置用户{qq}消息推送权限")
+
+    @filter.permission_type(filter.PermissionType.ADMIN)
+    @filter.command("rmmsgop")
+    async def cmd_rmmsgop(self, event: AstrMessageEvent, qq: str):
+        """取消用户消息推送权限"""
+        if qq not in self.userdata.keys():
+            await self.new_user(qq)
+        self.userdata[qq]["ismsgop"] = False
+        await self.save_userdata()
+        yield event.plain_result(f"已取消用户{qq}消息推送权限")
+
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("sync")
     async def sync(self, event: AstrMessageEvent):
@@ -265,6 +295,7 @@ class skinCodeAdmin(Star):
         msg += f"\n皮肤站uid:{userdata['skin_uid']}"
         msg += f"\n是否通过审核:{userdata['is_pass']}"
         msg += f"\n是否被ban:{userdata['is_banned']}"
+        msg += f"\n是否有消息推送权限:{userdata.get('ismsgop', False)}"
         msg += f"\n邀请者:{userdata['superior']}"
         msg += f"\n邀请了："
         for ins in userdata['subordinates']:
@@ -362,6 +393,7 @@ class skinCodeAdmin(Star):
             "skin_uid": "",
             "is_pass": False,
             "is_banned": False, 
+            "ismsgop": False,
             "superior": "", 
             "subordinates": []   
         }
