@@ -143,9 +143,13 @@ class skinCodeAdmin(Star):
         """设置群为用户群，即限制白名单自动审批群，需要管理员权限"""
         raw_message = event.message_obj.raw_message
         group_id = raw_message.get("group_id", "")
-        self.groupdata["user"].append(group_id)
-        await self.save_groupdata()
-        yield event.plain_result(f"已设置群{group_id}为用户群")
+        if(group_id not in self.groupdata["user"]):
+            logger.info(f"设置群{group_id}为用户群")
+            self.groupdata["user"].append(group_id)
+            await self.save_groupdata()
+            yield event.plain_result(f"已设置群{group_id}为用户群")
+        else:
+            yield event.plain_result(f"群{group_id}已经是用户群")
     
 
     @filter.permission_type(filter.PermissionType.ADMIN)
@@ -154,16 +158,21 @@ class skinCodeAdmin(Star):
         """取消群为用户群"""
         raw_message = event.message_obj.raw_message
         group_id = raw_message.get("group_id", "")
-        self.groupdata["user"].remove(group_id)
-        await self.save_groupdata()
-        yield event.plain_result(f"已取消群{group_id}为用户群")
+        if(group_id in self.groupdata["user"]):
+            logger.info(f"取消群{group_id}为用户群")
+            self.groupdata["user"].remove(group_id)
+            await self.save_groupdata()
+            yield event.plain_result(f"已取消群{group_id}为用户群")
+        else:
+            yield event.plain_result(f"群{group_id}不是用户群")
 
     @filter.command("smgroup", alias={'设置为消息群'})
     async def cmd_setmsggroup(self, event: AstrMessageEvent):
         """设置群为消息群"""
-        if(event.unified_msg_origin not in self.groupdata["msg"]):
-            raw_message = event.message_obj.raw_message
-            group_id = raw_message.get("group_id", "")
+        raw_message = event.message_obj.raw_message
+        group_id = raw_message.get("group_id", "")
+        if(group_id not in self.groupdata["msg"]):
+            logger.info(f"设置群{group_id}为通知群")
             self.groupdata["msg"].append(group_id)
             await self.save_groupdata()
             yield event.plain_result(f"已设置{group_id}为通知群")
@@ -173,10 +182,11 @@ class skinCodeAdmin(Star):
     @filter.command("rmgroup", alias={'取消为消息群'})
     async def cmd_rmmsggroup(self, event: AstrMessageEvent):
         """取消群为消息群"""
+        raw_message = event.message_obj.raw_message
+        group_id = raw_message.get("group_id", "")
         # self.groupdata["msg"].append(event.unified_msg_origin)
-        if(event.unified_msg_origin in self.groupdata["msg"]):
-            raw_message = event.message_obj.raw_message
-            group_id = raw_message.get("group_id", "")
+        if(group_id in self.groupdata["msg"]):
+            logger.info(f"取消群{group_id}为通知群")
             self.groupdata["msg"].remove(group_id)
             await self.save_groupdata()
             yield event.plain_result(f"已取消群{group_id}为通知群")
