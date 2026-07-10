@@ -37,12 +37,12 @@ class skinCodeAdmin(Star):
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("getallcodes")
     async def cmd_getallcodes(self, event: AstrMessageEvent):
-        """获取服务端的所有的邀请码""" # 这是 handler 的描述，将会被解析方便用户了解插件内容。建议填写。
-        # user_name = event.get_sender_name()
-        # message_str = event.message_str # 用户发的纯文本消息字符串
-        # message_chain = event.get_messages() # 用户所发的消息的消息链 # from astrbot.api.message_components import *
-        # logger.info(message_chain)
-        free,used = await self.getallcodes()
+        """获取服务端的所有的邀请码"""
+        result = await self.getallcodes()
+        if result is None:
+            yield event.plain_result("获取邀请码数据失败，请检查API配置或网络连接")
+            return
+        free, used = result
         yield event.plain_result(f"剩余{len(free)}\n已使用{len(used)}")
         # yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!") # 发送一条纯文本消息
 
@@ -92,14 +92,13 @@ class skinCodeAdmin(Star):
             await self.new_user(qq)
         await self.setpass(qq,False)
         await self.setban(qq,True)
+        assert isinstance(event, AiocqhttpMessageEvent)
         for gid in self.groupdata["user"]:
-            from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
-            assert isinstance(event, AiocqhttpMessageEvent)
             payloads = {
                     "group_id": gid,
                     "user_id": qq,
                     "reject_add_request": False
-                }  
+                }
             await event.bot.call_action("set_group_kick", **payloads)
             logger.info(f"提出用户{qq}成功在{gid}群中")
         yield event.plain_result(f"已封禁用户{qq}，并踢出相关群,他的皮肤站uid为{self.userdata[qq]['skin_uid']}")
@@ -136,7 +135,7 @@ class skinCodeAdmin(Star):
             userdata["is_pass"] = True
             userdata["superior"] = meqq
             self.userdata[meqq]["subordinates"].append(qq)
-            self.save_userdata()
+            await self.save_userdata()
             yield event.plain_result(f"已成功邀请用户{qq}，请注意，你们现在绑定为了上下级关系，一个犯事，联合处罚")
 
     @filter.permission_type(filter.PermissionType.ADMIN)
@@ -277,12 +276,12 @@ class skinCodeAdmin(Star):
 
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("allban")
-    async def cmd_allban(self, event: AstrMessageEvent, qq:int):
+    async def cmd_allban(self, event: AstrMessageEvent, qq:str):
         """封禁所有相关用户"""
         await self.cmd_ban(event, qq)
         associated = await self.get_associated(qq)
-        for qq in associated:
-            await self.cmd_ban(event, qq)
+        for associated_qq in associated:
+            await self.cmd_ban(event, associated_qq)
         event.stop_event()
 
     @filter.permission_type(filter.PermissionType.ADMIN)
@@ -383,7 +382,7 @@ class skinCodeAdmin(Star):
     async def qusery_uid(self, event: AstrMessageEvent, uid: str):
         """查询用户信息"""
         for userdata in self.userdata.values():
-            if userdata["skin_uid"] == int(uid):
+            if str(userdata["skin_uid"]) == str(uid):
                 msg = await self.query(event, userdata["id"])
                 return msg
         return f"未找到uid为{uid}的用户"
@@ -394,7 +393,12 @@ class skinCodeAdmin(Star):
         #寻找最上级
         if userdata['superior'] != "":
             superior = userdata['superior']
+            visited = {qq}
             while self.userdata[superior]['superior'] != "":
+                if superior in visited:
+                    logger.warning(f"检测到superior链循环引用，用户{qq}的上级链存在环")
+                    break
+                visited.add(superior)
                 superior = self.userdata[superior]['superior']
             data.append(superior)
         else:
@@ -507,7 +511,9 @@ class skinCodeAdmin(Star):
         logger.info(message)
         # groups = ["aiocqhttp:GroupMessage:233491069"] #测试用
         for group in groups:
-            if(group==event.unified_msg_origin):continue
+            # 提取unified_msg_origin中的群号进行比较
+            origin_group_id = event.unified_msg_origin.split(":")[-1] if ":" in event.unified_msg_origin else event.unified_msg_origin
+            if(group==origin_group_id):continue
             if self.is_blocked_time(group):
                 logger.info(f"群{group}当前处于禁止推送时段，跳过")
                 continue
@@ -560,8 +566,10 @@ class skinCodeAdmin(Star):
         logger.info(f"正在读取群数据文件")
         self.groupdata = await self.get_file(self.groupdata_file,{"user":[],"admin":[],"temp":[],"msg":[],"blocked_time":{}})
         logger.info(f"群数据文件读取完毕")
-    async def get_file(self, dir ,init={}):
+    async def get_file(self, dir ,init=None):
         """获取文件"""
+        if init is None:
+            init = {}
         if not os.path.exists(dir):
             with open(dir, "w", encoding="utf-8") as f:
                 json.dump(init, f)
