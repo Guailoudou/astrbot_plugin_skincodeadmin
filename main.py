@@ -6,7 +6,7 @@ from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import Aioc
 import os,aiohttp,json,asyncio
 
 
-@register("skinCodeAdmin", "Guailoudou", "皮肤站管理和群管理群发信息", "0.2.8")
+@register("skinCodeAdmin", "Guailoudou", "皮肤站管理和群管理群发信息", "0.2.9")
 class skinCodeAdmin(Star):
     def __init__(self, context: Context,config: AstrBotConfig):
         super().__init__(context)
@@ -284,6 +284,84 @@ class skinCodeAdmin(Star):
         for qq in associated:
             await self.cmd_ban(event, qq)
         event.stop_event()
+
+    @filter.permission_type(filter.PermissionType.ADMIN)
+    @filter.command("setblocked")
+    async def cmd_setblocked(self, event: AstrMessageEvent, time_range: str, group_id: str = None):
+        """设置群禁止推送时间段，格式：22:00-08:00 [群号]，该时段内不推送"""
+        import re
+
+        match = re.match(r'^(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})$', time_range)
+        if not match:
+            yield event.plain_result("时间格式错误，请使用 HH:MM-HH:MM 格式，如 22:00-08:00")
+            return
+
+        start_h, start_m, end_h, end_m = map(int, match.groups())
+        if not (0 <= start_h <= 23 and 0 <= start_m <= 59 and 0 <= end_h <= 23 and 0 <= end_m <= 59):
+            yield event.plain_result("时间值无效")
+            return
+
+        if group_id is None:
+            raw_message = event.message_obj.raw_message
+            group_id = raw_message.get("group_id", "")
+            if not group_id:
+                yield event.plain_result("请在群聊中使用或指定群号")
+                return
+
+        if "blocked_time" not in self.groupdata:
+            self.groupdata["blocked_time"] = {}
+        self.groupdata["blocked_time"][str(group_id)] = {
+            "start": f"{start_h:02d}:{start_m:02d}",
+            "end": f"{end_h:02d}:{end_m:02d}"
+        }
+        await self.save_groupdata()
+        yield event.plain_result(f"已设置群{group_id}的禁止推送时段为 {start_h:02d}:{start_m:02d}-{end_h:02d}:{end_m:02d}，该时段内不推送")
+
+    @filter.permission_type(filter.PermissionType.ADMIN)
+    @filter.command("rmblocked")
+    async def cmd_rmblocked(self, event: AstrMessageEvent, group_id: str = None):
+        """取消群禁止推送时段"""
+        if group_id is None:
+            raw_message = event.message_obj.raw_message
+            group_id = raw_message.get("group_id", "")
+            if not group_id:
+                yield event.plain_result("请在群聊中使用或指定群号")
+                return
+
+        if "blocked_time" not in self.groupdata or str(group_id) not in self.groupdata["blocked_time"]:
+            yield event.plain_result(f"群{group_id}未设置禁止推送时段")
+            return
+
+        del self.groupdata["blocked_time"][str(group_id)]
+        await self.save_groupdata()
+        yield event.plain_result(f"已取消群{group_id}的禁止推送时段")
+
+    def is_blocked_time(self, group_id: str) -> bool:
+        """检查当前时间是否在群的禁止推送时段内"""
+        from datetime import datetime
+
+        if "blocked_time" not in self.groupdata:
+            return False
+
+        if str(group_id) not in self.groupdata["blocked_time"]:
+            return False
+
+        time_config = self.groupdata["blocked_time"][str(group_id)]
+        start_str = time_config["start"]
+        end_str = time_config["end"]
+
+        now = datetime.now()
+        current_minutes = now.hour * 60 + now.minute
+
+        start_h, start_m = map(int, start_str.split(":"))
+        end_h, end_m = map(int, end_str.split(":"))
+        start_minutes = start_h * 60 + start_m
+        end_minutes = end_h * 60 + end_m
+
+        if start_minutes <= end_minutes:
+            return start_minutes <= current_minutes <= end_minutes
+        else:
+            return current_minutes >= start_minutes or current_minutes <= end_minutes
      
     async def query(self, event: AstrMessageEvent,qq: str):
         """查询用户信息"""
@@ -430,6 +508,9 @@ class skinCodeAdmin(Star):
         # groups = ["aiocqhttp:GroupMessage:233491069"] #测试用
         for group in groups:
             if(group==event.unified_msg_origin):continue
+            if self.is_blocked_time(group):
+                logger.info(f"群{group}当前处于禁止推送时段，跳过")
+                continue
             payloads = {
                             "group_id": group,
                             "messages": [
@@ -477,7 +558,7 @@ class skinCodeAdmin(Star):
     async def get_groupdata_file(self):
         """获取群数据文件"""
         logger.info(f"正在读取群数据文件")
-        self.groupdata = await self.get_file(self.groupdata_file,{"user":[],"admin":[],"temp":[],"msg":[]})
+        self.groupdata = await self.get_file(self.groupdata_file,{"user":[],"admin":[],"temp":[],"msg":[],"blocked_time":{}})
         logger.info(f"群数据文件读取完毕")
     async def get_file(self, dir ,init={}):
         """获取文件"""
