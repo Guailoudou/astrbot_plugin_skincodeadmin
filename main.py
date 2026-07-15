@@ -6,7 +6,7 @@ from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import Aioc
 import os,aiohttp,json,asyncio
 
 
-@register("skinCodeAdmin", "Guailoudou", "皮肤站管理和群管理群发信息", "0.2.9")
+@register("skinCodeAdmin", "Guailoudou", "皮肤站管理和群管理群发信息", "0.2.10")
 class skinCodeAdmin(Star):
     def __init__(self, context: Context,config: AstrBotConfig):
         super().__init__(context)
@@ -34,6 +34,38 @@ class skinCodeAdmin(Star):
         yield event.plain_result("已重新读取数据文件")
 
     # 注册指令的装饰器。指令名为 helloworld。注册成功后，发送 `/helloworld` 就会触发这个指令，并回复 `你好, {user_name}!`
+    @filter.command("skinhelp", alias={'群发帮助','皮肤站帮助'})
+    async def cmd_help(self, event: AstrMessageEvent):
+        """查看插件帮助"""
+        msg = """【皮肤站群管理插件帮助】
+─── 用户指令 ───
+[getmecode] - 私聊获取邀请码
+[invite] [QQ号] - 邀请用户（需已通过白名单）
+[setname] [昵称] - 设置自己的昵称
+[skinhelp] - 查看本帮助
+
+─── 管理员指令 ───
+[code_init] - 重新读取数据文件
+[getallcodes] - 获取所有邀请码统计
+[pass] [QQ号] - 通过用户白名单
+[ban] [QQ号] - 封禁用户并踢出所有用户群
+[unban] [QQ号] - 解封用户
+[allban] [QQ号] - 封禁用户及所有关联用户
+[query] [QQ号/UID] - 查询用户信息
+[sync] - 同步皮肤站用户信息
+[setmsgop] [QQ号] - 设置用户消息推送权限
+[rmmsgop] [QQ号] - 取消用户消息推送权限
+
+─── 群管理指令 ───
+[sugroup] - 设置当前群为用户群（白名单自动审批）
+[rugroup] - 取消当前群为用户群
+[smgroup] - 设置当前群为消息群（接收推送）
+[rmgroup] - 取消当前群为消息群
+[setblocked] [时间段] [群号] - 设置禁止推送时段，如 22:00-08:00
+[rmblocked] [群号] - 取消禁止推送时段
+[send] - 推送消息到所有消息群（管理员或推送权限用户）"""
+        yield event.plain_result(msg)
+
     @filter.permission_type(filter.PermissionType.ADMIN)
     @filter.command("getallcodes")
     async def cmd_getallcodes(self, event: AstrMessageEvent):
